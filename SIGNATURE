@@ -1,0 +1,70 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.53.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 13282465c26f8ebd62254de58b3b676c7dfa40bc Build.PL
+SHA1 68c94ffc34f8ad2d7bfae3f5a6b996409211c1b1 COPYING
+SHA1 8ef594850c79c15d05c14d70a63823ac0eae66b9 ChangeLog
+SHA1 d1d0fd5ceaf2006553b69fbe234a7e4bcabb13de ChangeLog.0
+SHA1 d982a1a2ca3b26f264fd530cc7ea51fd80367313 Changes
+SHA1 696c592da18c32cd92efdca4fd2fb722498e95b2 MANIFEST
+SHA1 c440043659cdf41fbe11d9cefe35145acc293f63 META.yml
+SHA1 4663c6466daf9872d81320a2934e4ce9d6c5771f Makefile
+SHA1 9da4ce5e226d113213ca5376603b281761c1efd3 Makefile.PL
+SHA1 eeee8972fa749113ca1755a7cd0b36dd189e4af7 README
+SHA1 3a7f4c0191b320ba4287ff96f0135ee61d2cdc90 audio.swg
+SHA1 20a2a822f67179d850c589f79270098b32b9ea0e compat.swg
+SHA1 4af5095f6de15397c896eabfe5d0a761005f53a8 configure
+SHA1 19b4049870fd9b6306778d8fd3fbdcc51f169c55 data/cdda.bin
+SHA1 4d48af2fbdb4a0c1601da469a1676757a3c31155 data/cdda.cue
+SHA1 29d615544145c8da4e9d23f92ca61b8aa3bc4fd0 data/cdda.toc
+SHA1 70b651d67810fdeb96e015f829aa20469c3309a5 data/isofs-m1.bin
+SHA1 8cb48199b6e90bdc7b97d9d7215c82247d2b1ec0 data/isofs-m1.cue
+SHA1 f7f0b6d5c7b43bde98c1fcbadaf0cb4434858fa8 device.swg
+SHA1 6d8828793082984a8720cd5e7a21793bd964d2a4 device_const.swg
+SHA1 f4a997c090a843e01e7681833c636af3804e20c2 disc.swg
+SHA1 ab1548b900a0a73c66405aba38f29d5e2f8b0bdc examples/README
+SHA1 f4272ce439f5115b0db17b180f6ead5718f7d66c examples/audio.pl
+SHA1 30ce1857100959baa9297a26eb7e172d6db85ca6 examples/cd-read.pl
+SHA1 e1d07520705bfc5891aad629e1a9cc26d941bbd1 examples/cdchange.pl
+SHA1 1bfa36ad9f5e48909cf37b7cd6caa59c69e19e87 examples/device.pl
+SHA1 f7cccd98a7fde8092499543531a3d71942c65fbe examples/drives.pl
+SHA1 0e676bbe41864e628f98f58a38366d71b1871e55 examples/eject.pl
+SHA1 02f199135a3807d77a44de42d7e712859e89971c examples/tracks.pl
+SHA1 9c1a92d27d0502143602e247759ba5c0aab31436 lib/Device/Cdio.pm
+SHA1 a23a11e7ede8249cdf5018747ad13471737118a2 lib/Device/Cdio/Device.pm
+SHA1 b849b5464338a21c011865508f4fa24a23c6d01b lib/Device/Cdio/Track.pm
+SHA1 3693822f5f8c641a9c85d6c2c5bb8f8d7ceb633c lib/Device/Cdio/Util.pm
+SHA1 704bf075e7ff67dc8aedf6e56121a32d3302b4dd perlcdio.swg
+SHA1 0183c552b4253bf180f049dd82ab1a3afa4499e1 read.swg
+SHA1 0cf7d0c6de176a6d0618a86637bef67f2a25afcd t/00.load.t
+SHA1 f4d9d02be8f5cd1443c9edc3f4b63751d8f032aa t/01.pod-coverage.t
+SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/01.pod.t
+SHA1 a6edfef58628f30e6879fc82aa12b7367c013170 t/02.default.t
+SHA1 38c15c04d70ba7a4052908e8c2eece188f8fc700 t/05.ops.t
+SHA1 9da633b046254576b8cf8ae0b5cd461f0bcf69bd t/06.bincue.t
+SHA1 1291e5cbbfd9422d65f0312cb2abf93295edbe84 t/06.image.t
+SHA1 47e9fdd3b4cf78b643802b8ca982a8f6c002e10a t/06.toc.t
+SHA1 fe6040cb518bf28aea811b1f5ef6cd2e1fd43a4c t/10.cdda.t
+SHA1 4531ba3bb6e8d02961455ba242a048f0cb366095 t/10.read.t
+SHA1 fe15cfb4646c3ee73e6b15d50ea622107c4b7102 track.swg
+SHA1 6bd39d200ff5acfb62f176da1fac7fb52761e16e types.swg
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+
+iD8DBQFD7Nj2Go3lAIJ17CERAmLdAKCDsfKAIk+1R90kBAKCv70G1wfEiQCfc+Aq
+d2qTtzWekJG8vGptFYw/QBI=
+=bW+V
+-----END PGP SIGNATURE-----

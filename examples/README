@@ -1,0 +1,28 @@
+A description of the example programs.
+
+audio.pl      show mostly audio (analog) controls. Can be used to play
+	      a CD. Because libcdio supports Disc Images as well as a real
+	      CD-ROM, a CDRWIN (BIN/CUE), cdrdao (TOC) or Nero NRG disc
+	      image can be played as well. Run --help to get a list of 
+              options
+
+cdchange.pl:  A program to test if a CD has been changed since the last
+	      change test.
+
+device.pl     A program to show drive capabilities..
+	      Various drives on various OS/s may or may not report
+              information correctly. (Perhaps someday libcdio will figure
+	      out enough work arounds. voluneteers welcome!)
+
+drives.pl:    A program list CD-ROMs and CD properties in the drives.
+	      Various drives on various OS/s may or may not report
+              information correctly. (Perhaps someday libcdio will figure
+	      out enough work arounds. voluneteers welcome!)
+
+eject.pl      A program eject a CD from a CD-ROM drive and then close the door
+	      again.
+
+tracks.pl     A program to list track numbers and logical sector
+	      numbers of a Compact Disc
+
+$Id: README,v 1.3 2006/02/10 12:37:25 rocky Exp $
