@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: 06.bincue.t,v 1.3 2006/02/09 19:09:21 rocky Exp $
+# $Id: 06.bincue.t,v 1.4 2006/02/13 02:20:20 rocky Exp $
 
 #Test functioning of BIN/CUE image routines
 
@@ -12,7 +12,7 @@ use lib '../lib';
 use blib;
 
 use Device::Cdio::Device;
-use Test::Simple tests => 13;
+use Test::Simple tests => 14;
 
 my $cuefile="data/cdda.cue";
 $cuefile = '../data/cdda.cue' if ! -f $cuefile;
@@ -30,9 +30,12 @@ $result = $device->get_driver_id();
 ok($result == $perlcdio::DRIVER_BINCUE, 'get_driver_id');
 $result = $device->get_arg("cue");
 ok(defined($result) && $result eq $cuefile, 'get_arg("cue")');
+$result = $device->get_device();
 # Test getting is_binfile and is_$cuefile
 my $binfile = Device::Cdio::is_cuefile($cuefile);
 ok(defined($binfile), "is_cuefile($cuefile)");
+ok(defined($result) && $result eq $binfile, 
+   "get_device(): $result == $binfile)");
 my $cuefile2 = Device::Cdio::is_binfile($binfile);
 # Could check that $cuefile2 == $cuefile, but some OS's may 
 # change the case of files

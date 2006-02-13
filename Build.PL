@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: Build.PL,v 1.12 2006/02/10 18:17:51 rocky Exp $
+# $Id: Build.PL,v 1.14 2006/02/13 02:20:20 rocky Exp $
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -42,24 +42,26 @@ sub process_swig_files {
 #
 sub process_swig {
   my ($self, $main_swig_file, $deps_ref) = @_;
-  my $cf = $self->{config}; # For convenience
+  my ($cf, $p) = ($self->{config}, $self->{properties}); # For convenience
 
   # File name. e.g, perlcdio.swg -> perlcdio_wrap.c
   (my $file_base = $main_swig_file) =~ s/\.[^.]+$//;
   my $c_file = "${file_base}_wrap.c";
 
-  # .swg -> .c
-  $self->add_to_cleanup($c_file);
-
-  # print "+++ c_file: $c_file, file: $main_swig_file ", `pwd`, "\n";
-  # If any of the swig files that the main swig depends is newer 
-  # then rebuild.
-  foreach my $depends_on ($main_swig_file, @$deps_ref) {
-      unless ($self->up_to_date($depends_on, $c_file)) {
-	  $self->compile_swig($main_swig_file, $c_file);
-	  # Only need to build $c_file once no matter how many 
-	  # includes there are.
-	  last;
+  if ($p->{swig_installed}) {
+      # .swg -> .c
+      $self->add_to_cleanup($c_file);
+      
+      # print "+++ c_file: $c_file, file: $main_swig_file ", `pwd`, "\n";
+      # If any of the swig files that the main swig depends is newer 
+      # then rebuild.
+      foreach my $depends_on ($main_swig_file, @$deps_ref) {
+	  unless ($self->up_to_date($depends_on, $c_file)) {
+	      $self->compile_swig($main_swig_file, $c_file);
+	      # Only need to build $c_file once no matter how many 
+	      # includes there are.
+	      last;
+	  }
       }
   }
   
@@ -277,19 +279,21 @@ if (exists($pkgcfg{'modversion'})) {
 
 print "Checking for SWIG...";
 my @swig_version = `swig -version 2>&1`;
+my $swig_installed = 0;
 if ($?) {
     my $errno = $? >> 8;
     print "
-*** Problems finding swig and/or getting SWIG version. 
-*** You need to have SWIG installed. 
-*** Get SWIG from http://www.swig.org
+*** I don't see SWIG installed. I'll use the SWIG-generated file
+*** that comes with the distribution. If you want SWIG, get it
+*** from http://www.swig.org
 "; 
     print "*** Output was:
 	@swig_version
 " if @swig_version;
-    exit 2;
+} else {
+    $swig_installed = 1;
+    print "ok\n";
 }
-print "ok\n";
 
 my $ccflags = $pkgcfg{cflags};
 
@@ -311,7 +315,7 @@ if ('cygwin' eq $Config{osname} &&
     # This is just a guess from the python libcdio wrapper.
     # If someone know what to do let me know. Perhaps nothing is needed?
     # Right - on Darwan? Fuhgetaboutit!
-    $ldflags .= " -bundle -undefined suppress -flat_namespace";
+    $ldflags .= " -bundle -flat_namespace";
 }
 
 my $class = Module::Build->subclass( code => $code );
@@ -325,6 +329,7 @@ my $builder = $class->new(
     extra_linker_flags  => $ldflags,
     extra_compiler_flags=> $ccflags,
     swig_flags          => $swig_flags,
+    swig_installed      => $swig_installed,
     license             => 'gpl',
     requires => {
 	'ExtUtils::PkgConfig'     => '1.03',

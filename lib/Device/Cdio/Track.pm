@@ -1,7 +1,7 @@
 package Device::Cdio::Track;
-require 5.8.7;
+require 5.8.6;
 #
-#    $Id: Track.pm,v 1.5 2006/02/10 01:58:05 rocky Exp $
+#    $Id: Track.pm,v 1.7 2006/02/13 02:20:20 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -35,6 +35,8 @@ use perlcdio;
 use Device::Cdio::Util qw(_rearrange _check_arg_count _extra_args);
 use Device::Cdio;
 use Device::Cdio::Device;
+
+$Device::Cdio::Device::VERSION = $Device::Cdio::VERSION;
 
 =pod
 

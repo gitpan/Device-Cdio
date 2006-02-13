@@ -1,7 +1,7 @@
 package Device::Cdio::Util;
-require 5.8.7;
+require 5.8.6;
 #
-#    $Id: Util.pm,v 1.4 2006/02/10 01:58:05 rocky Exp $
+#    $Id: Util.pm,v 1.5 2006/02/11 10:20:47 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #

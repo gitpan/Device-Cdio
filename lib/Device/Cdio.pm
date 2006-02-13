@@ -1,7 +1,7 @@
 package Device::Cdio;
-require 5.8.7;
+require 5.8.6;
 #
-#    $Id: Cdio.pm,v 1.7 2006/02/10 17:16:59 rocky Exp $
+#    $Id: Cdio.pm,v 1.9 2006/02/13 02:20:20 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -28,11 +28,11 @@ Device::Cdio - Base class for CD Input and Control library.
 
 =head1 VERSION
 
-This document describes Cdio version 0.0.1
+This document describes Cdio version 0.0.2
 
 =cut 
 
-use version; $VERSION = qv('0.0.1');
+use version; $VERSION = qv('0.0.2');
 
 =pod 
 
@@ -128,7 +128,7 @@ use vars qw($VERSION $revision @EXPORT_OK @EXPORT @ISA %drivers);
 use perlcdio;
 use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
 
-$revision = '$Id: Cdio.pm,v 1.7 2006/02/10 17:16:59 rocky Exp $';
+$revision = '$Id: Cdio.pm,v 1.9 2006/02/13 02:20:20 rocky Exp $';
 
 use warnings;
 use strict;
