@@ -1,7 +1,7 @@
 package Device::Cdio::Device;
 require 5.8.6;
 #
-#    $Id: Device.pm,v 1.8 2006/02/13 02:20:20 rocky Exp $
+#    $Id: Device.pm,v 1.11 2006/03/02 03:47:20 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -26,10 +26,11 @@ require 5.8.6;
 
 =head1 NAME
 
-Cdio:Device handles disc and device aspects of Cdio.
+Cdio::Device handles disc and device aspects of Cdio.
 
 =cut
 
+use warnings;
 use strict;
 use Exporter;
 use perlcdio;
@@ -38,8 +39,9 @@ use Device::Cdio qw(convert_drive_cap_read convert_drive_cap_write
 		    convert_drive_cap_misc );
 use Device::Cdio::Track;
 
-$Device::Cdio::Device::VERSION = $Device::Cdio::VERSION;
-@Device::Cdio::Device::EXPORT = qw( close open new );
+$Device::Cdio::Device::VERSION   = $Device::Cdio::VERSION;
+@Device::Cdio::Device::EXPORT    = qw( new );
+@Device::Cdio::Device::EXPORT_OK = qw( close open );
 
 =pod 
 
@@ -51,9 +53,9 @@ $Device::Cdio::Device::VERSION = $Device::Cdio::VERSION;
 
 =head2 new
 
-new(source, driver_id, access_mode)->$track_object
+new(source, driver_id, access_mode)->$device_object
 
-Create a new Track object. Either driver_id or source can be
+Create a new Device object. Either driver_id or source can be
 undef. Probably best to not to give an access_mode too, unless you know
 what you are doing.
 
@@ -202,28 +204,6 @@ sub  get_arg {
     my($key, @args) = 	_rearrange(['KEY'], @p);
     return undef if _extra_args(@args);
     return perlcdio::get_arg($self->{cd}, $key);
-}
-
-=pod
-
-=head2 get_default_device_driver
-
-get_default_device_driver( driver_id=$perlcdio::DRIVER_DEVICE)->str
-
-Get the default CD device.  If we haven't initialized a specific
-device driver, then find a suitable one and return the default device
-for that.  In some situations of drivers or OS's we can't find a CD
-device if there is no media in it and it is possible for this routine
-to return undef even though there may be a hardware CD-ROM.
-
-=cut
-
-sub get_default_device_driver {
-    my($self,@p) = @_;
-    my($driver_id, @args) = _rearrange(['DRIVER_ID'], @p);
-    return undef if _extra_args(@args);
-    $driver_id = $perlcdio::DRIVER_DEVICE if !defined($driver_id);
-    return perlcdio::get_default_device_driver($driver_id);
 }
 
 =pod
@@ -435,22 +415,6 @@ sub get_joliet_level {
 
 =pod
 
-=head2 get_mcn
-
-get_mcn()->str
-       
-Get the media catalog number (MCN) from the CD.
-  
-=cut
-
-sub get_mcn {
-    my($self,@p) = @_;
-    return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 0);
-    return perlcdio::get_mcn($self->{cd});
-}
-
-=pod
-
 =head2 get_last_session
 
 get_last_session(self) -> (track_lsn, drc)
@@ -481,6 +445,22 @@ sub get_last_track {
     return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 0);
     return Device::Cdio::Track->new(-device=>$self->{cd},
 				    -track=>perlcdio::get_last_track_num($self->{cd}));
+}
+
+=pod
+
+=head2 get_mcn
+
+get_mcn()->str
+       
+Get the media catalog number (MCN) from the CD.
+  
+=cut
+
+sub get_mcn {
+    my($self,@p) = @_;
+    return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 0);
+    return perlcdio::get_mcn($self->{cd});
 }
 
 =pod
@@ -601,7 +581,7 @@ sub lseek {
 
 =head2 open
 
-open(source=undef, driver_id=libcdio.DRIVER_UNKNOWN,
+open(source=undef, driver_id=$libcdio::DRIVER_UNKNOWN,
     access_mode=undef)
 
 Sets up to read from place specified by source, driver_id and access
@@ -779,24 +759,6 @@ sub set_speed {
     my($speed, @args) =  _rearrange(['SPEED'], @p);
     return $perlcdio::BAD_PARAMETER if _extra_args(@args);
     return perlcdio::set_speed($self->{cd}, $speed);
-}
-
-=pod
-
-=head2 set_track
-
-set_track(track_num)
-
-Set a new track number for the given track number.
-
-=cut 
-
-sub set_track {
-    my($self,@p) = @_;
-    my($track_num, @args) = _rearrange(['TRACK'], @p);
-    return undef if _extra_args(@args);
-    $self->{track} = $track_num;
-    return $self;
 }
 
 1; # Magic true value required at the end of a module

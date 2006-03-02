@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: device.swg,v 1.10 2006/02/13 02:20:20 rocky Exp $
+    $Id: device.swg,v 1.14 2006/03/01 21:34:00 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -21,16 +21,15 @@
 
 %include "device_const.swg"
 
-/* Set up to allow functions returning device lists of type "char
-   **". We'll use a typedef so we can make sure to isolate this. I
-   don't think we need to in this program, but it I think it makes
-   thing clearer.
+/* Set up to allow functions to return device lists of type "char
+   *". We'll use a typedef so we can make sure to isolate this. I
+   *don't think we need to in this program, but it I think it makes
+   *thing clearer.
 */
 %inline %{
 typedef char ** DeviceList_t;
 %}
 
-%typemap(newfree) DeviceList_t "cdio_free_device_list($1);";
 %typemap(perl5,out) DeviceList_t {   
     // $1 is of type DeviceList_t
     char **p   = result;
@@ -43,18 +42,14 @@ typedef char ** DeviceList_t;
       num++;
     }
 
-    if (argvi >= items) {            
-      /* Extend the stack by num objects */
-      EXTEND(sp, num);
-    }
     /* For each element in the array of strings, create a new
      * mortalscalar, and stuff it into the above array. */
     for (p = $1; *p; p++) {
       /* Have perl compute the length of the string using strlen() */
-      PUSHs(sv_2mortal(newSVpv(*p, 0)));
+      XPUSHs(sv_2mortal(newSVpv(*p, 0)));
     }
-    /* FIXME: the + 1 is because p_cdio is still on the stack. */
-    argvi += num + 1;
+    argvi += num;
+    cdio_free_device_list($1);
  out: ;
 }
 
@@ -198,7 +193,6 @@ get_default_device_driver(driver_id_t driver_id, driver_id_t *p_out_driver_id)
 %}
 
 %rename cdio_get_devices get_devices; 
-%newobject cdio_get_devices;
 /*! Return an array of device names. If you want a specific
   devices for a driver, give that device. If you want hardware
   devices, give DRIVER_DEVICE and if you want all possible devices,
@@ -212,7 +206,6 @@ get_default_device_driver(driver_id_t driver_id, driver_id_t *p_out_driver_id)
 */
 DeviceList_t cdio_get_devices (driver_id_t driver_id);
 
-%newobject get_devices_ret;
 /* Like cdio_get_devices, but we may change the p_driver_id if we
    were given DRIVER_DEVICE or DRIVER_UNKNOWN. This is because
    often one wants to get a drive name and then *open* it
@@ -221,10 +214,10 @@ DeviceList_t cdio_get_devices (driver_id_t driver_id);
 */
     
 DeviceList_t get_devices_ret (driver_id_t driver_id, 
-			 driver_id_t *p_out_driver_id);
+			      driver_id_t *p_out_driver_id);
 %inline %{
 DeviceList_t get_devices_ret (driver_id_t driver_id, 
-			 driver_id_t *p_out_driver_id) {
+			      driver_id_t *p_out_driver_id) {
   *p_out_driver_id = driver_id;
   return cdio_get_devices_ret (p_out_driver_id);
  }
@@ -258,7 +251,6 @@ get_devices_with_cap (unsigned int capabilities, bool b_any) {
 %}
 
 %apply driver_id_t *OUTPUT { driver_id_t *p_out_driver_id };
-%newobject cdio_get_devices_with_cap_ret;
 /*
   Like cdio_get_devices_with_cap but we return the driver we found
   as well. This is because often one wants to search for kind of drive
@@ -266,7 +258,7 @@ get_devices_with_cap (unsigned int capabilities, bool b_any) {
   and speeds things up for libcdio as well.
 */
 DeviceList_t get_devices_with_cap_ret (unsigned int capabilities, bool b_any,
-				  driver_id_t *p_out_driver_id);
+				       driver_id_t *p_out_driver_id);
 %inline %{
 DeviceList_t
 get_devices_with_cap_ret (unsigned int capabilities, bool b_any,
@@ -455,17 +447,6 @@ const HWInfo_t get_hwinfo ( const CdIo_t *p_cdio, int *drc);
 
 %inline %{
 static cdio_hwinfo_t hw_info;
-#if LIBCDIO_VERSION_NUM <= 76
-/* There is yet another bug in libcdio <= 0.76 were we
-   might not respect the fixed-length field boundaries
-   in image drivers. In non CVS versions it probably isn't
-   a problem - and it isn's a problem in the current CVS.
-   But we'll add this variable below as a buffer just in 
-   case.
-*/
-static char junk[20];
-#endif
- 
 const 
 HWInfo_t get_hwinfo ( const CdIo_t *p_cdio, int *drc)
 {

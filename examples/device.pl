@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#$Id: device.pl,v 1.4 2006/02/10 13:39:24 rocky Exp $
+#$Id: device.pl,v 1.5 2006/02/13 15:28:31 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -34,7 +34,7 @@ use vars qw($0 $program $pause %opts);
 
 use strict;
 
-my $vcid ='$Id: device.pl,v 1.4 2006/02/10 13:39:24 rocky Exp $';
+my $vcid ='$Id: device.pl,v 1.5 2006/02/13 15:28:31 rocky Exp $';
 
 # Prints out drive capabilities
 sub print_drive_capabilities($$$) {
@@ -177,3 +177,11 @@ my ($i_read_cap, $i_write_cap, $i_misc_cap) =  $d->get_drive_cap();
 print_drive_capabilities($i_read_cap, $i_write_cap, $i_misc_cap);
 
 
+print "\nDriver Availabiliity...\n";
+
+foreach my $driver_name (sort keys(%Device::Cdio::drivers)) {
+    print "Driver $driver_name is installed.\n"
+	if Device::Cdio::have_driver($driver_name) and
+	$driver_name !~ m{device|Unknown};
+}
+$d->close();

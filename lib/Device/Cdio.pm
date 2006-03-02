@@ -1,7 +1,7 @@
 package Device::Cdio;
 require 5.8.6;
 #
-#    $Id: Cdio.pm,v 1.9 2006/02/13 02:20:20 rocky Exp $
+#    $Id: Cdio.pm,v 1.13 2006/03/02 07:20:19 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -28,17 +28,17 @@ Device::Cdio - Base class for CD Input and Control library.
 
 =head1 VERSION
 
-This document describes Cdio version 0.0.2
+This document describes Cdio version 0.2.0
 
 =cut 
 
-use version; $VERSION = qv('0.0.2');
+use version; $VERSION = qv('0.2.0');
 
 =pod 
 
 =head1 SYNOPSIS
 
-The encapsulates CD-ROM reading and control. Applications wishing to
+This encapsulates CD-ROM reading and control. Applications wishing to
 be oblivious of the OS- and device-dependent properties of a CD-ROM
 can use this library.
 
@@ -94,7 +94,7 @@ Routines accept named parameters as well as positional parameters.
 For named parameters, each argument name is preceded by a dash. For
 example:
 
-    Cdio::have_driver(-driver_id=>'GNU/Linux')
+    Device::Cdio::have_driver(-driver_id=>'GNU/Linux')
 
 Each argument name is preceded by a dash.  Neither case nor order
 matters in the argument list.  -driver_id, -Driver_ID, and -DRIVER_ID
@@ -117,22 +117,22 @@ $perlcdio::DRIVER_UNKNOWN is used.
 The older, more traditional style of positional parameters is also
 supported. So the "have_driver example from above can also be written:
 
-    Cdio::have_driver('GNU/Linux')
+    Device::Cdio::have_driver('GNU/Linux')
 
 Finally, since no parameter name can be confused with a an integer,
 negative values will not get confused as a named parameter.
 
 =cut
 
-use vars qw($VERSION $revision @EXPORT_OK @EXPORT @ISA %drivers);
-use perlcdio;
-use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
-
-$revision = '$Id: Cdio.pm,v 1.9 2006/02/13 02:20:20 rocky Exp $';
+$revision = '$Id: Cdio.pm,v 1.13 2006/03/02 07:20:19 rocky Exp $';
 
 use warnings;
 use strict;
+use perlcdio;
 use Carp;
+
+use vars qw($VERSION $revision @EXPORT_OK @EXPORT @ISA %drivers);
+use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
 
 @ISA = qw(Exporter);
 @EXPORT    = qw(close_tray have_driver is_binfile is_cuefile is_nrg is_device
@@ -356,7 +356,7 @@ sub get_devices_with_cap {
 
 Like get_devices_with_cap but we return the driver we found as
 well. This is because often one wants to search for kind of drive and
-then *open* it afterwards. Giving the driver back facilitates this,
+then *open* it afterward. Giving the driver back facilitates this,
 and speeds things up for libcdio as well.
 
 =cut
@@ -435,6 +435,24 @@ sub is_cuefile {
     return perlcdio::is_cuefile($file_name);
 }
 
+=pod 
+
+=head2 is_device
+
+is_device(source, driver_id=$perlcdio::DRIVER_UNKNOWN)->bool
+
+Return True if source refers to a real hardware CD-ROM.
+=cut
+
+sub is_device {
+
+    my (@p) = @_;
+    my($source, $driver_id) = _rearrange(['SOURCE', 'DRIVER_ID'], @p);
+
+    $driver_id=$perlcdio::DRIVER_UNKNOWN if !defined($driver_id);
+    return perlcdio::is_device($source, $driver_id);
+}
+
 =pod
 
 =head2 is_nrg
@@ -449,23 +467,6 @@ sub is_nrg {
     my (@p) = @_;
     my($file_name) = _rearrange(['NRGFILE'], @p);
     return perlcdio::is_nrg($file_name);
-}
-
-=pod
-
-=head2 is_device
-
-is_device(source, driver_id=$perlcdio::DRIVER_UNKNOWN)->bool
-
-Return True if source refers to a real hardware CD-ROM.
-=cut
-sub is_device {
-
-    my (@p) = @_;
-    my($source, $driver_id) = _rearrange(['SOURCE', 'DRIVER_ID'], @p);
-
-    $driver_id=$perlcdio::DRIVER_UNKNOWN if !defined($driver_id);
-    return perlcdio::is_device($source, $driver_id);
 }
 
 =pod
@@ -622,7 +623,8 @@ __END__
 =head1 SEE ALSO
 
 L<Device::Cdio::Device> for device objects and L<Device::Cdio::Track>
-for track objects.
+for track objects and L<Device::Cdio::ISO9660> for working with ISO 9660
+filesystems.
 
 L<perlcdio> is the lower-level interface to libcdio.
 

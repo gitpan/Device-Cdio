@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: types.swg,v 1.5 2006/02/10 17:16:59 rocky Exp $
+    $Id: types.swg,v 1.8 2006/02/28 12:36:58 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -33,8 +33,11 @@
 #endif
 
 #define uint32_t LONG unsigned int
+#define uint16_t LONG unsigned int
 #define int32_t  LONG int
+#define uint8_t  unsigned char
 
+typedef long int my_ssize_t;
 typedef unsigned int driver_id_t;
 typedef int lsn_t;
 typedef int int16_t;

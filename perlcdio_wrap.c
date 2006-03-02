@@ -1284,7 +1284,7 @@ get_default_device_driver(driver_id_t driver_id, driver_id_t *p_out_driver_id)
 
 
 DeviceList_t get_devices_ret (driver_id_t driver_id, 
-			 driver_id_t *p_out_driver_id) {
+			      driver_id_t *p_out_driver_id) {
   *p_out_driver_id = driver_id;
   return cdio_get_devices_ret (p_out_driver_id);
  }
@@ -1667,6 +1667,7 @@ XS(_wrap_read_cd) {
             sv_setiv(ST(argvi),(IV) *(arg3));
             argvi++;
         }
+        free(result);
         XSRETURN(argvi);
         fail:
         ;
@@ -2429,21 +2430,16 @@ XS(_wrap_get_devices) {
                 num++;
             }
             
-            if (argvi >= items) {
-                /* Extend the stack by num objects */
-                EXTEND(sp, num);
-            }
             /* For each element in the array of strings, create a new
                  * mortalscalar, and stuff it into the above array. */
             for (p = result; *p; p++) {
                 /* Have perl compute the length of the string using strlen() */
-                PUSHs(sv_2mortal(newSVpv(*p, 0)));
+                XPUSHs(sv_2mortal(newSVpv(*p, 0)));
             }
-            /* FIXME: the + 1 is because p_cdio is still on the stack. */
-            argvi += num + 1;
+            argvi += num;
+            cdio_free_device_list(result);
             out: ;
         }
-        cdio_free_device_list(result);
         XSRETURN(argvi);
         fail:
         ;
@@ -2480,18 +2476,14 @@ XS(_wrap_get_devices_ret) {
                 num++;
             }
             
-            if (argvi >= items) {
-                /* Extend the stack by num objects */
-                EXTEND(sp, num);
-            }
             /* For each element in the array of strings, create a new
                  * mortalscalar, and stuff it into the above array. */
             for (p = result; *p; p++) {
                 /* Have perl compute the length of the string using strlen() */
-                PUSHs(sv_2mortal(newSVpv(*p, 0)));
+                XPUSHs(sv_2mortal(newSVpv(*p, 0)));
             }
-            /* FIXME: the + 1 is because p_cdio is still on the stack. */
-            argvi += num + 1;
+            argvi += num;
+            cdio_free_device_list(result);
             out: ;
         }
         {
@@ -2502,7 +2494,6 @@ XS(_wrap_get_devices_ret) {
             sv_setuv(ST(argvi),(UV) *(arg2));
             argvi++;
         }
-        cdio_free_device_list(result);
         XSRETURN(argvi);
         fail:
         ;
@@ -2538,18 +2529,14 @@ XS(_wrap_get_devices_with_cap) {
                 num++;
             }
             
-            if (argvi >= items) {
-                /* Extend the stack by num objects */
-                EXTEND(sp, num);
-            }
             /* For each element in the array of strings, create a new
                  * mortalscalar, and stuff it into the above array. */
             for (p = result; *p; p++) {
                 /* Have perl compute the length of the string using strlen() */
-                PUSHs(sv_2mortal(newSVpv(*p, 0)));
+                XPUSHs(sv_2mortal(newSVpv(*p, 0)));
             }
-            /* FIXME: the + 1 is because p_cdio is still on the stack. */
-            argvi += num + 1;
+            argvi += num;
+            cdio_free_device_list(result);
             out: ;
         }
         XSRETURN(argvi);
@@ -2590,18 +2577,14 @@ XS(_wrap_get_devices_with_cap_ret) {
                 num++;
             }
             
-            if (argvi >= items) {
-                /* Extend the stack by num objects */
-                EXTEND(sp, num);
-            }
             /* For each element in the array of strings, create a new
                  * mortalscalar, and stuff it into the above array. */
             for (p = result; *p; p++) {
                 /* Have perl compute the length of the string using strlen() */
-                PUSHs(sv_2mortal(newSVpv(*p, 0)));
+                XPUSHs(sv_2mortal(newSVpv(*p, 0)));
             }
-            /* FIXME: the + 1 is because p_cdio is still on the stack. */
-            argvi += num + 1;
+            argvi += num;
+            cdio_free_device_list(result);
             out: ;
         }
         {

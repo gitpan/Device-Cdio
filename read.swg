@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: read.swg,v 1.4 2006/02/10 17:16:59 rocky Exp $
+    $Id: read.swg,v 1.5 2006/02/28 12:36:58 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -26,7 +26,6 @@
 %constant long int READ_MODE_M2F2  = CDIO_READ_MODE_M2F2;
 
 typedef int cdio_read_mode_t;
-typedef long int my_ssize_t;
 %inline %{
   typedef long int my_ssize_t;
 %}
@@ -35,6 +34,7 @@ typedef long int my_ssize_t;
 %rename cdio_lseek lseek;
 off_t cdio_lseek(const CdIo_t *p_cdio, off_t offset, int whence=SEEK_SET);
 
+%newobject read_cd; // free malloc'd return value
 char *read_cd(const CdIo_t *p_cdio, my_ssize_t i_size, 
 	      /*out*/ my_ssize_t *pi_size);
 

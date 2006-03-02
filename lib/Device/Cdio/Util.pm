@@ -1,7 +1,7 @@
 package Device::Cdio::Util;
 require 5.8.6;
 #
-#    $Id: Util.pm,v 1.5 2006/02/11 10:20:47 rocky Exp $
+#    $Id: Util.pm,v 1.6 2006/02/13 15:28:31 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -27,7 +27,7 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(_rearrange _make_attributes _check_arg_count _extra_args);
 
-$VERSION = '0.01';
+$VERSION = $Device::Cdio::VERSION;
 
 # Check that we $count (the argument count of arguments passed has
 # between $min and $max arguments.
