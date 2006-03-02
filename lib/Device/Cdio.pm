@@ -28,11 +28,11 @@ Device::Cdio - Base class for CD Input and Control library.
 
 =head1 VERSION
 
-This document describes Cdio version 0.2.0
+This document describes Cdio version 0.2.1
 
 =cut 
 
-use version; $VERSION = qv('0.2.0');
+use version; $VERSION = qv('0.2.1');
 
 =pod 
 

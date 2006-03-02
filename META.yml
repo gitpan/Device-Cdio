@@ -1,8 +1,8 @@
 ---
 name: Device-Cdio
-version: v0.2.0
+version: v0.2.1
 author:
-  - Rocky Bernstein <rocky@cpan.org>
+  - 'Rocky Bernstein <rocky@cpan.org>'
 abstract: CD Input and control library
 license: gpl
 requires:
@@ -12,7 +12,7 @@ requires:
 provides:
   Device::Cdio:
     file: lib/Device/Cdio.pm
-    version: v0.2.0
+    version: v0.2.1
   Device::Cdio::Device:
     file: lib/Device/Cdio/Device.pm
   Device::Cdio::ISO9660:
@@ -25,4 +25,12 @@ provides:
     file: lib/Device/Cdio/Track.pm
   Device::Cdio::Util:
     file: lib/Device/Cdio/Util.pm
+  perlcdio:
+    file: lib/perlcdio.pm
+  perlcdioc:
+    file: lib/perlcdio.pm
+  perliso9660:
+    file: lib/perliso9660.pm
+  perliso9660c:
+    file: lib/perliso9660.pm
 generated_by: Module::Build version 0.2611
