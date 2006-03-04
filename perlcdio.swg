@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: perlcdio.swg,v 1.7 2006/02/10 17:16:59 rocky Exp $
+    $Id: perlcdio.swg,v 1.8 2006/03/03 03:17:18 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -77,11 +77,14 @@ pycdio, do result in small, but obvious and straightforward changes to
 the abstraction layer cdio.)
 */
 %perlcode %{
+import Device::Cdio::VERSION;
+$VERSION = $Device::Cdio::VERSION;
+
 =pod
 
 =head1 NAME
 
-perlcdio - lower-level wrappper to libcdio, the CD Input and Control library
+perlcdio - lower-level wrapper to libcdio, the CD Input and Control library
 
 =head1 SYNOPSIS
 

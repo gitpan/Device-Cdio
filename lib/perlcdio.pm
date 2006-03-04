@@ -261,11 +261,14 @@ package perlcdio;
 *DISC_MODE_ERROR = *perlcdioc::DISC_MODE_ERROR;
 *DISC_MODE_CD_I = *perlcdioc::DISC_MODE_CD_I;
 
+import Device::Cdio::VERSION;
+$VERSION = $Device::Cdio::VERSION;
+
 =pod
 
 =head1 NAME
 
-perlcdio - lower-level wrappper to libcdio, the CD Input and Control library
+perlcdio - lower-level wrapper to libcdio, the CD Input and Control library
 
 =head1 SYNOPSIS
 

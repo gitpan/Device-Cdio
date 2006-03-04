@@ -1,9 +1,9 @@
 #=============================================================
-# $Id: Makefile,v 1.4 2006/02/10 13:39:24 rocky Exp $
+# $Id: Makefile,v 1.5 2006/03/03 23:33:06 rocky Exp $
 #=============================================================
 # Invariably there will be folks who just haven't gotten with 
 # the program. In fact they may never learn. This file is for them. 
-BUILD_TARGETS = build clean code config_data diff dist distcheck distclean \
+BUILD_TARGETS = build clean code config_data diff dist distclean \
 	distdir distmeta distsign disttest docs fakeinstall help html \
 	install manifest ppd ppmdis realclean skipcheck test testcover \
 	testdb testpod versioninstall
@@ -17,6 +17,12 @@ all: Build
 
 Build:: Build.PL
 	perl Build.PL
+
+# There is a "Build distcheck", but it doesn't work like "make distcheck".
+# "make disttest" is more similar. So if you want "Build distcheck"
+# you'll have to issue that *not* via "make".
+distcheck:
+	perl Build disttest
 
 dist: all
 

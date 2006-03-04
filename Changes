@@ -1,5 +1,22 @@
 Revision history for Device-Cdio
 
+0.2.2  Mar 3, 2006
+
+- Changes dictated by CPAN: copy of SWIG-generated files from blib/lib
+  to lib
+
+- Add version numbers for SWIG Perl modules
+
+- Add ISO9660::IFS and ISO9660::FS regression tests
+
+- Better "Synopsis" documentation on IFS and FS.
+
+- add create_makefile_pl => passthrough for Makefile.PL compatibility
+
+0.2.0  Mar 2, 2006
+
+Interrum hand-hacked package to get CPAN to index. 
+
 0.2.0  Mar 1, 2006
 
 - Add rudimentary ISO 9660 library. See iso1.pl, iso2.pl, iso3.pl
@@ -46,4 +63,4 @@ this is straightforward based on continuing what's here.
 
 It was an incredible amount of work to get just this far.
 
-$Id: Changes,v 1.4 2006/03/02 03:55:01 rocky Exp $
+$Id: Changes,v 1.7 2006/03/03 23:09:28 rocky Exp $

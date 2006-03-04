@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#$Id: iso2.pl,v 1.1 2006/03/02 03:47:20 rocky Exp $
+#$Id: iso2.pl,v 1.2 2006/03/03 03:17:18 rocky Exp $
 #
 #  Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #  
@@ -46,10 +46,11 @@ use Device::Cdio;
 use Device::Cdio::Device;
 use Device::Cdio::ISO9660;
 use Device::Cdio::ISO9660::FS;
-
 use Device::Cdio::Device;
-my $cd_image_path="../data/";
-my $cd_image_fname=$cd_image_path."isofs-m1.cue";
+use File::Spec;
+
+my $cd_image_path="../data";
+my $cd_image_fname=File::Spec->catfile($cd_image_path, "isofs-m1.cue");
 
 # File to extract if none given.
 my $iso9660_path="/";
@@ -75,7 +76,7 @@ if (!defined($cd)) {
     exit 1;
 }
 
-my $statbuf = $cd->stat ($iso9660_path.$local_filename);
+my $statbuf = $cd->stat (File::Spec->catfile($iso9660_path, $local_filename));
 
 if (!defined($statbuf))
 {

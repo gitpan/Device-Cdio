@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: Build.PL,v 1.19 2006/03/02 18:00:35 rocky Exp $
+# $Id: Build.PL,v 1.23 2006/03/04 01:05:58 rocky Exp $
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@ use ExtUtils::PkgConfig;
 use Config;
 
 my $code = <<'EOC';
+use File::Copy;
 
 sub process_swig_files {
     my $self = shift;
@@ -105,6 +106,12 @@ sub compile_swig {
 		     '-perl', @swig_flags, $file)
 	or die "error building $c_file file from '$file'";
     
+    my $pm_file = "${file_base}.pm";
+    my $from = File::Spec->catfile($blib_lib, $pm_file);
+    my $to   = File::Spec->catfile("lib", $pm_file);
+
+    print "Copying from: $from, to: $to; it makes the CPAN indexer happy.\n";
+    copy($from,$to);
     return $c_file;
 }
 
@@ -295,7 +302,7 @@ if ($?) {
 
 my $ccflags = $libcdio_pkgcfg{cflags};
 
-## Swig produces a number of GCC warnings. Turn them off if we can.
+ ## Swig produces a number of GCC warnings. Turn them off if we can.
 $ccflags .= try_cflags("-Wno-strict-aliasing");
 $ccflags .= try_cflags("-Wno-unused-function");
 $ccflags .= try_cflags("-Wno-unused-value");
@@ -319,6 +326,7 @@ my $class = Module::Build->subclass( code => $code );
 my $builder = $class->new( 
     module_name         => 'Device::Cdio',
     add_to_cleanup      => [ 'Device-Cdio-*', 'tmp*'  ],
+    create_makefile_pl  => 'passthrough',
     dist_abstract       => 'CD Input and control library',
     dist_author         => 'Rocky Bernstein <rocky@cpan.org>',
     dist_version_from   => 'lib/Device/Cdio.pm',

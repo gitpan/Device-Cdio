@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#$Id: iso3.pl,v 1.1 2006/03/02 03:47:20 rocky Exp $
+#$Id: iso3.pl,v 1.3 2006/03/03 21:11:09 rocky Exp $
 #
 #  Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #  
@@ -38,10 +38,11 @@ use Device::Cdio;
 use Device::Cdio::Device;
 use Device::Cdio::ISO9660;
 use Device::Cdio::ISO9660::IFS;
+use File::Spec;
 
 # The default ISO 9660 image if none given
-my $ISO9660_IMAGE_PATH="../data/";
-my $ISO9660_IMAGE=$ISO9660_IMAGE_PATH."copying.iso";
+my $ISO9660_IMAGE_PATH="../data";
+my $ISO9660_IMAGE=File::Spec->catfile($ISO9660_IMAGE_PATH, "copying.iso");
 
 # File to extract if none given.
 my $local_filename="copying";
@@ -87,7 +88,7 @@ binmode OUTPUT;
 my $blocks = POSIX::ceil($statbuf->{size} / $perlcdio::ISO_BLOCKSIZE);
 for (my $i = 0; $i < $blocks; $i++) {
     my $lsn = $statbuf->{LSN} + $i;
-    my $buf = $iso->seek_read ($lsn, 1);
+    my $buf = $iso->seek_read ($lsn);
 
     if (!defined($buf)) {
 	printf "Error reading ISO 9660 file %s at LSN %d\n",

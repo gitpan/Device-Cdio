@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: 07.iso.t,v 1.6 2006/03/02 18:14:55 rocky Exp $
+# $Id: 07.iso.t,v 1.9 2006/03/03 23:59:07 rocky Exp $
 
 # Test some low-level ISO9660 routines
 # This is basically the same thing as libcdio's testiso9660.c
@@ -86,10 +86,11 @@ my $dst;
 SKIP: 
 {
     skip("strncpy_pad broken too often. Volunteers for fixing?.", 2);
+	# if 'cygwin' eq $Config{osname};
 
     $dst = perliso9660::strncpy_pad("1_3", 5, $perliso9660::DCHARS);
     ok($dst eq "1_3  ", "strncpy_pad DCHARS");
-
+    
     $dst = perliso9660::strncpy_pad("ABC!123", 2, $perliso9660::ACHARS);
     ok($dst eq "AB", "strncpy_pad ACHARS truncation");
 }

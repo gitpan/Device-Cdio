@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#$Id: iso1.pl,v 1.3 2006/03/02 16:32:35 rocky Exp $
+#$Id: iso1.pl,v 1.4 2006/03/03 03:17:18 rocky Exp $
 #
 #  Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #  
@@ -36,10 +36,11 @@ use Device::Cdio;
 use Device::Cdio::Device;
 use Device::Cdio::ISO9660;
 use Device::Cdio::ISO9660::IFS;
+use File::Spec;
 
 # The default ISO 9660 image if none given
-my $ISO9660_IMAGE_PATH="../data/";
-my $ISO9660_IMAGE=$ISO9660_IMAGE_PATH."copying.iso";
+my $ISO9660_IMAGE_PATH="../data";
+my $ISO9660_IMAGE=File::Spec->catfile($ISO9660_IMAGE_PATH, "copying.iso");
 
 my $iso_image_fname = $ISO9660_IMAGE;
 $iso_image_fname = $ARGV[0] if @ARGV >= 1;

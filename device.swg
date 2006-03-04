@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: device.swg,v 1.14 2006/03/01 21:34:00 rocky Exp $
+    $Id: device.swg,v 1.16 2006/03/04 01:05:58 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
