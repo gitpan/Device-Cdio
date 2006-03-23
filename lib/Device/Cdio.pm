@@ -1,7 +1,7 @@
 package Device::Cdio;
 require 5.8.6;
 #
-#    $Id: Cdio.pm,v 1.16 2006/03/03 22:51:40 rocky Exp $
+#    $Id: Cdio.pm,v 1.18 2006/03/20 18:58:13 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -17,7 +17,8 @@ require 5.8.6;
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+#    02110-1301 USA.
 #
 
 =pod
@@ -28,7 +29,7 @@ Device::Cdio - Module for CD Input and Control library.
 
 =cut 
 
-use version; $VERSION = qv('0.2.2');
+use version; $VERSION = qv('0.2.3');
 
 =pod 
 
@@ -84,14 +85,14 @@ example:
     Device::Cdio::have_driver(-driver_id=>'GNU/Linux')
 
 Each argument name is preceded by a dash.  Neither case nor order
-matters in the argument list.  -driver_id, -Driver_ID, and -DRIVER_ID
-are all acceptable.  In fact, only the first argument needs to begin
-with a dash.  If a dash is present in the first argument, we assume
-dashes for the subsequent parameters.
+matters in the argument list.  C<-driver_id>, C<-Driver_ID>, and
+C<-DRIVER_ID> are all acceptable.  In fact, only the first argument
+needs to begin with a dash.  If a dash is present in the first
+argument, we assume dashes for the subsequent parameters.
 
 In the documentation below and elsewhere in this package the parameter
 name that can be used in this style of call is given in the parameter
-list. For example, for "close tray the documentation below reads:
+list. For example, for C<close_tray> the documentation below reads:
 
    close_tray(drive=undef, driver_id=$perlcdio::DRIVER_UNKNOWN) 
     -> ($drc, $driver_id)
@@ -111,7 +112,7 @@ negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: Cdio.pm,v 1.16 2006/03/03 22:51:40 rocky Exp $';
+$revision = '$Id: Cdio.pm,v 1.18 2006/03/20 18:58:13 rocky Exp $';
 
 use warnings;
 use strict;

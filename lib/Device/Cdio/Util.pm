@@ -1,7 +1,7 @@
 package Device::Cdio::Util;
 require 5.8.6;
 #
-#    $Id: Util.pm,v 1.6 2006/02/13 15:28:31 rocky Exp $
+#    $Id: Util.pm,v 1.7 2006/03/17 03:35:32 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -148,7 +148,7 @@ __END__
 
 =head1 NAME
 
-Device::Cdio::Util - Internal utilities used by CGI module
+Device::Cdio::Util - Internal utilities used by Cdio modules
 
 =head1 SYNOPSIS
 

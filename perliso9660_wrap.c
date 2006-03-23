@@ -1149,36 +1149,34 @@ iso9660_pvd_t *ifs_read_pvd ( const iso9660_t *p_iso ) {
 
 iso9660_dtime_t *
 set_dtime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst)
+	    int tm_year)
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday,
-		   tm_isdst };
-  static iso9660_dtime_t idr_date;
-  iso9660_set_dtime (&tm, &idr_date);
-  return &idr_date;
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  static iso9660_dtime_t dtime;
+  iso9660_set_dtime (&tm, &dtime);
+  return &dtime;
 }
 
 
 iso9660_ltime_t *
 set_ltime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst)
+	    int tm_year)
 
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday,
-		   tm_isdst };
-  static iso9660_ltime_t pvd_date;
-  iso9660_set_ltime (&tm, &pvd_date);
-  return &pvd_date;
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  static iso9660_ltime_t ldate;
+  iso9660_set_ltime (&tm, &ldate);
+  return &ldate;
 }
 
 
-bool get_dtime (const iso9660_dtime_t *idr_date, bool use_localtime,
+bool get_dtime (const iso9660_dtime_t *dtime, bool use_localtime,
 		int *tm_sec, int *tm_min,  int *tm_hour, int *tm_mday,
 		int *tm_mon, int *tm_year, int *tm_wday, int *tm_yday,
 		int *tm_isdst) 
 {
   struct tm tm;
-  bool b_okay = iso9660_get_dtime (idr_date, use_localtime, &tm);
+  bool b_okay = iso9660_get_dtime (dtime, use_localtime, &tm);
   if (b_okay) {
     *tm_sec   = tm.tm_sec;
     *tm_min   = tm.tm_min;
@@ -1239,10 +1237,9 @@ strncpy_pad(const char src[], size_t len, enum strncpy_pad_check _check) {
 }
 
 
-IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[], 
-			   bool b_mode2)
+IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[])
 {
-  CdioList_t *p_statlist = iso9660_fs_readdir (p_cdio, psz_path, b_mode2);
+  CdioList_t *p_statlist = iso9660_fs_readdir (p_cdio, psz_path, false);
   return p_statlist;
 }
 
@@ -1728,15 +1725,12 @@ XS(_wrap_set_dtime) {
         int arg4 ;
         int arg5 ;
         int arg6 ;
-        int arg7 ;
-        int arg8 ;
-        int arg9 ;
         iso9660_dtime_t *result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 9) || (items > 9)) {
-            SWIG_croak("Usage: set_dtime(tm_sec,tm_min,tm_hour,tm_mday,tm_mon,tm_year,tm_wday,tm_yday,tm_isdst);");
+        if ((items < 6) || (items > 6)) {
+            SWIG_croak("Usage: set_dtime(tm_sec,tm_min,tm_hour,tm_mday,tm_mon,tm_year);");
         }
         arg1 = (int) SvIV(ST(0));
         arg2 = (int) SvIV(ST(1));
@@ -1744,10 +1738,7 @@ XS(_wrap_set_dtime) {
         arg4 = (int) SvIV(ST(3));
         arg5 = (int) SvIV(ST(4));
         arg6 = (int) SvIV(ST(5));
-        arg7 = (int) SvIV(ST(6));
-        arg8 = (int) SvIV(ST(7));
-        arg9 = (int) SvIV(ST(8));
-        result = (iso9660_dtime_t *)set_dtime(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+        result = (iso9660_dtime_t *)set_dtime(arg1,arg2,arg3,arg4,arg5,arg6);
         
         ST(argvi) = sv_newmortal();
         SWIG_MakePtr(ST(argvi++), (void *) result, SWIGTYPE_p_iso9660_dtime_t, 0|0);
@@ -1767,15 +1758,12 @@ XS(_wrap_set_ltime) {
         int arg4 ;
         int arg5 ;
         int arg6 ;
-        int arg7 ;
-        int arg8 ;
-        int arg9 ;
         iso9660_ltime_t *result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 9) || (items > 9)) {
-            SWIG_croak("Usage: set_ltime(tm_sec,tm_min,tm_hour,tm_mday,tm_mon,tm_year,tm_wday,tm_yday,tm_isdst);");
+        if ((items < 6) || (items > 6)) {
+            SWIG_croak("Usage: set_ltime(tm_sec,tm_min,tm_hour,tm_mday,tm_mon,tm_year);");
         }
         arg1 = (int) SvIV(ST(0));
         arg2 = (int) SvIV(ST(1));
@@ -1783,10 +1771,7 @@ XS(_wrap_set_ltime) {
         arg4 = (int) SvIV(ST(3));
         arg5 = (int) SvIV(ST(4));
         arg6 = (int) SvIV(ST(5));
-        arg7 = (int) SvIV(ST(6));
-        arg8 = (int) SvIV(ST(7));
-        arg9 = (int) SvIV(ST(8));
-        result = (iso9660_ltime_t *)set_ltime(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+        result = (iso9660_ltime_t *)set_ltime(arg1,arg2,arg3,arg4,arg5,arg6);
         
         ST(argvi) = sv_newmortal();
         SWIG_MakePtr(ST(argvi++), (void *) result, SWIGTYPE_p_iso9660_ltime_t, 0|0);
@@ -1834,7 +1819,7 @@ XS(_wrap_get_dtime) {
         arg10 = &temp10;
         arg11 = &temp11;
         if ((items < 2) || (items > 2)) {
-            SWIG_croak("Usage: get_dtime(idr_date,use_localtime);");
+            SWIG_croak("Usage: get_dtime(dtime,use_localtime);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_iso9660_dtime_t,0) < 0) {
@@ -1961,7 +1946,7 @@ XS(_wrap_get_ltime) {
         arg9 = &temp9;
         arg10 = &temp10;
         if ((items < 1) || (items > 1)) {
-            SWIG_croak("Usage: get_ltime(idr_date);");
+            SWIG_croak("Usage: get_ltime(dtime);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_iso9660_ltime_t,0) < 0) {
@@ -2363,12 +2348,12 @@ XS(_wrap_fs_stat_translate) {
     {
         CdIo_t *arg1 = (CdIo_t *) 0 ;
         char *arg2 ;
-        bool arg3 ;
+        bool arg3 = (bool) false ;
         IsoStat_t *result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
+        if ((items < 2) || (items > 3)) {
             SWIG_croak("Usage: fs_stat_translate(p_cdio,psz_path,b_mode2);");
         }
         {
@@ -2378,7 +2363,9 @@ XS(_wrap_fs_stat_translate) {
         }
         arg2 = SvPV(ST(1),PL_na);
         
-        arg3 = (bool) SvIV(ST(2));
+        if (items > 2) {
+            arg3 = (bool) SvIV(ST(2));
+        }
         result = (IsoStat_t *)iso9660_fs_stat_translate(arg1,(char const (*))arg2,arg3);
         
         {
@@ -2500,13 +2487,12 @@ XS(_wrap_fs_readdir) {
     {
         CdIo_t *arg1 = (CdIo_t *) 0 ;
         char *arg2 ;
-        bool arg3 ;
         IsoStatList_t *result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: fs_readdir(p_cdio,psz_path,b_mode2);");
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: fs_readdir(p_cdio,psz_path);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_CdIo_t,0) < 0) {
@@ -2515,8 +2501,7 @@ XS(_wrap_fs_readdir) {
         }
         arg2 = SvPV(ST(1),PL_na);
         
-        arg3 = (bool) SvIV(ST(2));
-        result = (IsoStatList_t *)fs_readdir(arg1,(char const (*))arg2,arg3);
+        result = (IsoStatList_t *)fs_readdir(arg1,(char const (*))arg2);
         
         {
             // result is of type IsoStatList_t
@@ -2753,6 +2738,7 @@ XS(_wrap_iso9660_dir_to_name) {
         } else {
             sv_setsv((SV*)ST(argvi++), &PL_sv_undef);
         }
+        free(result);
         XSRETURN(argvi);
         fail:
         ;
@@ -3481,7 +3467,7 @@ static swig_constant_info swig_constants[] = {
 { SWIG_INT,     (char *) SWIG_prefix "DIRECTORY", (long) ISO_DIRECTORY, 0, 0, 0},
 { SWIG_INT,     (char *) SWIG_prefix "ASSOCIATED", (long) ISO_ASSOCIATED, 0, 0, 0},
 { SWIG_INT,     (char *) SWIG_prefix "RECORD", (long) ISO_RECORD, 0, 0, 0},
-{ SWIG_INT,     (char *) SWIG_prefix "PROECTION", (long) ISO_PROECTION, 0, 0, 0},
+{ SWIG_INT,     (char *) SWIG_prefix "PROTECTION", (long) 16, 0, 0, 0},
 { SWIG_INT,     (char *) SWIG_prefix "DRESERVED1", (long) ISO_DRESERVED1, 0, 0, 0},
 { SWIG_INT,     (char *) SWIG_prefix "DRESERVED2", (long) ISO_DRESERVED2, 0, 0, 0},
 { SWIG_INT,     (char *) SWIG_prefix "MULTIEXTENT", (long) ISO_MULTIEXTENT, 0, 0, 0},

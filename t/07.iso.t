@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: 07.iso.t,v 1.9 2006/03/03 23:59:07 rocky Exp $
+# $Id: 07.iso.t,v 1.12 2006/03/17 16:52:46 rocky Exp $
 
 # Test some low-level ISO9660 routines
 # This is basically the same thing as libcdio's testiso9660.c
@@ -14,14 +14,14 @@ use lib '../lib';
 use blib;
 
 use perliso9660;
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 sub is_eq($$) {
     my ($a_ref, $b_ref) = @_;
     return 0 if @$a_ref != @$b_ref;
     for (my $i=0; $i<@$a_ref; $i++) {
 	if ($a_ref->[$i] != $b_ref->[$i]) {
-	    printf "position %d: %d != %d\n", $i, $a_ref->[$i] != $b_ref->[$i];
+	    printf "position %d: %d != %d\n", $i, $a_ref->[$i], $b_ref->[$i];
 	    return 0 ;
 	}
     }
@@ -47,7 +47,7 @@ for (my $c=ord('A'); $c<=ord('Z'); $c++ ) {
     }
 }
 
-ok($bad==0, 'is_dchar & isarch A..Z');
+ok($bad==0, 'is_dchar & is_achar A..Z');
 
 $bad=0;
 for (my $c=ord('0'); $c<=ord('9'); $c++ ) {
@@ -160,14 +160,27 @@ if ($dst ne "this/file.ext;1") {
 }
 ok($bad==0, 'perliso9660::pathname_isofy');
 
-my @tm = gmtime(0);
+my @tm = localtime(0);
 my $dtime = perliso9660::set_dtime($tm[0], $tm[1], $tm[2], $tm[3], $tm[4],
-				   $tm[5], $tm[6], $tm[7], $tm[8]);
-my ($bool, @new_tm) = perliso9660::get_dtime($dtime, 0);
+				   $tm[5]);
+my ($bool, @new_tm) = perliso9660::get_dtime($dtime, 1);
 
-### FIXME Don't know why the discrepancy, but there is a 5 hour difference.
-$new_tm[2] = $tm[2]; 
+### FIXME Don't know why the discrepancy, but there is an hour
+### difference, perhaps daylight savings time.
+### Versions before 0.77 have other bugs.
+if ($perliso9660::VERSION_NUM < 77) {
+    $new_tm[2] = $tm[2]; 
+}
 
-ok(is_eq(\@new_tm, \@tm), 'get_dtime != set_dtime');
+ok(is_eq(\@new_tm, \@tm), 'get_dtime(set_dtime())');
+
+if ($perliso9660::VERSION_NUM >= 77) {
+    @tm = gmtime(0);
+    my $ltime = perliso9660::set_ltime($tm[0], $tm[1], $tm[2], $tm[3], $tm[4],
+				       $tm[5]);
+    ($bool, @new_tm) =  perliso9660::get_ltime($ltime);
+    ok(is_eq(\@new_tm, \@tm), 'get_ltime(set_ltime())');
+}
+
 
 exit 0;

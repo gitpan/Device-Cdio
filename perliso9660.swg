@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id%
+    $Id: perliso9660.swg,v 1.16 2006/03/16 21:48:42 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -15,7 +15,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+    02110-1301 USA.
 */
 %define DOCSTRING 
 "This is a wrapper for The CD Input and Control library's ISO-9660 library
@@ -57,7 +58,14 @@ typedef uint8_t iso_extension_mask_t;
 %constant long int DIRECTORY            = ISO_DIRECTORY;
 %constant long int ASSOCIATED           = ISO_ASSOCIATED;
 %constant long int RECORD               = ISO_RECORD;
-%constant long int PROECTION            = ISO_PROECTION;
+
+/* When version 0.77 comes out, require it and fix this fix this. */
+#if 0
+%constant long int PROTECTION           = ISO_PROTECTION;
+#else 
+%constant long int PROTECTION           = 16;
+#endif
+
 %constant long int DRESERVED1           = ISO_DRESERVED1;
 %constant long int DRESERVED2           = ISO_DRESERVED2;
 %constant long int MULTIEXTENT          = ISO_MULTIEXTENT;
@@ -303,17 +311,16 @@ bool iso9660_ifs_read_superblock (iso9660_t *p_iso,
   from a Unix time structure. */
 iso9660_dtime_t *
 set_dtime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst);
+	    int tm_year);
 %inline %{
 iso9660_dtime_t *
 set_dtime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst)
+	    int tm_year)
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday,
-		   tm_isdst };
-  static iso9660_dtime_t idr_date;
-  iso9660_set_dtime (&tm, &idr_date);
-  return &idr_date;
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  static iso9660_dtime_t dtime;
+  iso9660_set_dtime (&tm, &dtime);
+  return &dtime;
 }
 %}
 
@@ -322,26 +329,25 @@ set_dtime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon,
   from a Unix time structure. */
 iso9660_ltime_t *
 set_ltime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst);
+	    int tm_year);
 
 %inline %{
 iso9660_ltime_t *
 set_ltime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
-	    int tm_year, int tm_wday, int tm_yday, int tm_isdst)
+	    int tm_year)
 
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday,
-		   tm_isdst };
-  static iso9660_ltime_t pvd_date;
-  iso9660_set_ltime (&tm, &pvd_date);
-  return &pvd_date;
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  static iso9660_ltime_t ldate;
+  iso9660_set_ltime (&tm, &ldate);
+  return &ldate;
 }
 %}
 
 /*!
   Get Unix time structure from format use in an ISO 9660 directory index 
   record. Even though tm_wday and tm_yday fields are not explicitly in
-  idr_date, they are calculated from the other fields.
+  dtime, they are calculated from the other fields.
 
   If tm is to reflect the localtime, set "use_localtime" true, otherwise
   tm will reported in GMT.
@@ -350,19 +356,19 @@ set_ltime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon,
                      int *tm_mon, int *tm_year, int *tm_wday, int *tm_yday,
                      int *tm_isdst };
 
-bool get_dtime (const iso9660_dtime_t *idr_date, bool use_localtime,
+bool get_dtime (const iso9660_dtime_t *dtime, bool use_localtime,
 		int *tm_sec, int *tm_min,  int *tm_hour, int *tm_mday,
 		int *tm_mon, int *tm_year, int *tm_wday, int *tm_yday,
 		int *tm_isdst);
 
 %inline %{
-bool get_dtime (const iso9660_dtime_t *idr_date, bool use_localtime,
+bool get_dtime (const iso9660_dtime_t *dtime, bool use_localtime,
 		int *tm_sec, int *tm_min,  int *tm_hour, int *tm_mday,
 		int *tm_mon, int *tm_year, int *tm_wday, int *tm_yday,
 		int *tm_isdst) 
 {
   struct tm tm;
-  bool b_okay = iso9660_get_dtime (idr_date, use_localtime, &tm);
+  bool b_okay = iso9660_get_dtime (dtime, use_localtime, &tm);
   if (b_okay) {
     *tm_sec   = tm.tm_sec;
     *tm_min   = tm.tm_min;
@@ -382,7 +388,7 @@ bool get_dtime (const iso9660_dtime_t *idr_date, bool use_localtime,
   Get "long" time in format used in ISO 9660 primary volume descriptor
   from a Unix time structure. 
 */
-bool get_ltime (const iso9660_ltime_t *idr_date, 
+bool get_ltime (const iso9660_ltime_t *dtime, 
 		int *tm_sec, int *tm_min,  int *tm_hour, int *tm_mday,
 		int *tm_mon, int *tm_year, int *tm_wday, int *tm_yday,
 		int *tm_isdst);
@@ -517,7 +523,7 @@ bool iso9660_dirname_valid_p (const char psz_path[]);
 
 /*!  
   Take psz_path and a version number and turn that into a ISO-9660
-  pathname.  (That's just the pathname followd by ";" and the version
+  pathname.  (That's just the pathname followed by ";" and the version
   number. For example, mydir/file.ext -> MYDIR/FILE.EXT;1 for version
   1. The resulting ISO-9660 pathname is returned.
 */
@@ -574,11 +580,13 @@ IsoStat_t *iso9660_fs_stat (CdIo_t *p_cdio, const char psz_path[]);
   Return file status for path name psz_path. NULL is returned on error.
   pathname version numbers in the ISO 9660 name are dropped, i.e. ;1
   is removed and if level 1 ISO-9660 names are lowercased.
+
+  The b_mode2 parameter is not used.
  */
 %rename iso9660_fs_stat_translate fs_stat_translate;
 IsoStat_t *iso9660_fs_stat_translate (CdIo_t *p_cdio, 
 				      const char psz_path[], 
-				      bool b_mode2);
+				      bool b_mode2=false);
 
 /*!  
   Return file status for pathname. NULL is returned on error.
@@ -599,13 +607,12 @@ IsoStat_t *iso9660_ifs_stat_translate (iso9660_t *p_iso,
   pointers for the files inside that directory. The caller must free the
   returned result.
 */
-IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[], 
-			   bool b_mode2);
+IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[]);
+
 %inline %{
-IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[], 
-			   bool b_mode2)
+IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[])
 {
-  CdioList_t *p_statlist = iso9660_fs_readdir (p_cdio, psz_path, b_mode2);
+  CdioList_t *p_statlist = iso9660_fs_readdir (p_cdio, psz_path, false);
   return p_statlist;
 }
 %}
@@ -633,7 +640,7 @@ char * iso9660_get_application_id(iso9660_pvd_t *p_pvd);
   
 /*!  
   Get the application ID.  Return NULL if there
-  is some problem in getting this and false is returned.
+  is some problem in getting this.
 */
 %newobject get_application_id; // free malloc'd return value
 char *ifs_get_application_id(iso9660_t *p_iso);
@@ -659,10 +666,9 @@ uint8_t iso9660_get_dir_len(const iso9660_dir_t *p_idr);
 
 /*!
   Return the directory name stored in the iso9660_dir_t
-  
-  A string is allocated: the caller must deallocate.
 */
 %rename iso9660_get_to_name get_to_name;
+%newobject iso9660_dir_to_name; // free malloc'd return value
 char * iso9660_dir_to_name (const iso9660_dir_t *p_iso9660_dir);
   
 #if LIBCDIO_VERSION_NUM > 76
@@ -681,7 +687,7 @@ mode_t iso9660_get_posix_filemode(const iso9660_stat_t *p_iso_dirent);
 char *iso9660_get_preparer_id(const iso9660_pvd_t *p_pvd);
 
 /*!  Get the preparer ID.  Return NULL if there is some problem in
-  getting this and false is returned.
+  getting this.
 */
 %newobject ifs_get_preparer_id; // free malloc'd return value
 char *ifs_get_preparer_id(iso9660_t *p_iso);
@@ -704,7 +710,7 @@ char *iso9660_get_publisher_id(const iso9660_pvd_t *p_pvd);
 
 /*!  
   Get the publisher ID.  return NULL if there
-  is some problem in getting this and false is returned.
+  is some problem in getting this.
 */
 %newobject ifs_get_publisher_id; // free malloc'd return value
 char *ifs_get_publisher_id(iso9660_t *p_iso);
@@ -745,7 +751,7 @@ char *iso9660_get_system_id(const iso9660_pvd_t *p_pvd);
 
 /*!  
   Get the system ID.  return NULL if there
-  is some problem in getting this and false is returned.
+  is some problem in getting this.
 */
 %newobject ifs_get_system_id; // free malloc'd return value
 char *ifs_get_system_id(iso9660_t *p_iso);
@@ -773,7 +779,7 @@ char *iso9660_get_volume_id(const iso9660_pvd_t *p_pvd);
 
 /*!  
   Get the system ID.  return NULL if there
-  is some problem in getting this and false is returned.
+  is some problem in getting this.
 */
 %newobject ifs_get_volume_id; // free malloc'd return value
 char *ifs_get_volume_id(iso9660_t *p_iso);
@@ -796,7 +802,7 @@ char *iso9660_get_volumeset_id(const iso9660_pvd_t *p_pvd);
 
 /*!  
   Get the volumeset ID.  return NULL if there
-  is some problem in getting this and false is returned.
+  is some problem in getting this.
 */
 %newobject ifs_get_volumeset_id; // free malloc'd return value
 char *ifs_get_volumeset_id(iso9660_t *p_iso);
@@ -1060,7 +1066,7 @@ Enumeration in strncpy_pad for checking entry has only DCHARs.
 
 =head2 Input Output
 
-=head3 open
+=head3 open_iso
 
 Open an ISO 9660 image for reading. Maybe in the future we will have
 mode. undef is returned on error.
@@ -1080,7 +1086,7 @@ i_fuzz).
 
 Maybe in the future we will have a mode. undef is returned on error.
 
-See also open
+See also open_iso
 
 =head3 open_fuzzy_ext
 
@@ -1146,7 +1152,7 @@ from a Unix time structure.
 
 Get Unix time structure from format use in an ISO 9660 directory index 
 record. Even though tm_wday and tm_yday fields are not explicitly in
-idr_date, they are calculated from the other fields.
+dtime, they are calculated from the other fields.
 
 If tm is to reflect the localtime, set "use_localtime" 1, otherwise
 tm will reported in GMT.
@@ -1208,7 +1214,7 @@ which is separated by a /, and consist of only DCHARs.
 =head3 pathname_isofy
 
 Take psz_path and a version number and turn that into a ISO-9660
-pathname.  (That is just the pathname followd by ";" and the version
+pathname.  (That is just the pathname followed by ";" and the version
 number. For example, mydir/file.ext -> MYDIR/FILE.EXT;1 for version
 1. The resulting ISO-9660 pathname is returned.
 

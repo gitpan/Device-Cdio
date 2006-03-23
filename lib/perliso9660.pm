@@ -134,7 +134,7 @@ package perliso9660;
 *DIRECTORY = *perliso9660c::DIRECTORY;
 *ASSOCIATED = *perliso9660c::ASSOCIATED;
 *RECORD = *perliso9660c::RECORD;
-*PROECTION = *perliso9660c::PROECTION;
+*PROTECTION = *perliso9660c::PROTECTION;
 *DRESERVED1 = *perliso9660c::DRESERVED1;
 *DRESERVED2 = *perliso9660c::DRESERVED2;
 *MULTIEXTENT = *perliso9660c::MULTIEXTENT;
@@ -370,7 +370,7 @@ Enumeration in strncpy_pad for checking entry has only DCHARs.
 
 =head2 Input Output
 
-=head3 open
+=head3 open_iso
 
 Open an ISO 9660 image for reading. Maybe in the future we will have
 mode. undef is returned on error.
@@ -390,7 +390,7 @@ i_fuzz).
 
 Maybe in the future we will have a mode. undef is returned on error.
 
-See also open
+See also open_iso
 
 =head3 open_fuzzy_ext
 
@@ -456,7 +456,7 @@ from a Unix time structure.
 
 Get Unix time structure from format use in an ISO 9660 directory index 
 record. Even though tm_wday and tm_yday fields are not explicitly in
-idr_date, they are calculated from the other fields.
+dtime, they are calculated from the other fields.
 
 If tm is to reflect the localtime, set "use_localtime" 1, otherwise
 tm will reported in GMT.
@@ -518,7 +518,7 @@ which is separated by a /, and consist of only DCHARs.
 =head3 pathname_isofy
 
 Take psz_path and a version number and turn that into a ISO-9660
-pathname.  (That is just the pathname followd by ";" and the version
+pathname.  (That is just the pathname followed by ";" and the version
 number. For example, mydir/file.ext -> MYDIR/FILE.EXT;1 for version
 1. The resulting ISO-9660 pathname is returned.
 

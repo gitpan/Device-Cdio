@@ -1,7 +1,7 @@
 package Device::Cdio::ISO9660::IFS;
 require 5.8.6;
 #
-#    $Id: IFS.pm,v 1.11 2006/03/03 21:01:43 rocky Exp $
+#    $Id: IFS.pm,v 1.12 2006/03/13 03:30:49 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -90,7 +90,7 @@ negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: IFS.pm,v 1.11 2006/03/03 21:01:43 rocky Exp $';
+$revision = '$Id: IFS.pm,v 1.12 2006/03/13 03:30:49 rocky Exp $';
 
 $Device::Cdio::ISO9660::IFS::VERSION = $Device::Cdio::VERSION;
 
@@ -158,8 +158,8 @@ sub new {
 
 close()->bool
 
-Free resources associated with ISO9660.  Call this when done using using
-an ISO 9660 image.
+Close previously opened ISO 9660 image and free resources associated
+with ISO9660.  Call this when done using using an ISO 9660 image.
 
 =cut
 
@@ -342,6 +342,10 @@ from this ISO 9660 image.
 This should be called before using any other routine except possibly
 new. It is implicitly called when a new is done specifying a source.
 
+If device object was previously opened it is closed first.
+
+See also open_fuzzy.
+
 =cut
 
 sub open {
@@ -373,6 +377,8 @@ set the eventual offset to adjust by (as long as that is <= $fuzz).
 This should be called before using any other routine except possibly
 new (which must be called first. It is implicitly called when a new is
 done specifying a source.
+
+See also open.
 
 =cut
 
