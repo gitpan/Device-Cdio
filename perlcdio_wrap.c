@@ -1217,6 +1217,19 @@ read_data_bytes(const CdIo_t *p_cdio, lsn_t i_lsn,
 }
 
 
+const char *get_track_msf(const CdIo_t *p_cdio, track_t i_track)
+{
+	msf_t msf;
+	char *psz_msf;
+
+	if (!cdio_get_track_msf( p_cdio, i_track, &msf )) {
+		return "error";
+	}
+	psz_msf = cdio_msf_to_str( &msf );
+	return psz_msf;
+}
+
+
 const char 
 *get_track_format(const CdIo_t *p_cdio, track_t i_track) 
 {
@@ -2090,6 +2103,39 @@ XS(_wrap_get_track_lsn) {
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_get_track_msf) {
+    {
+        CdIo_t *arg1 = (CdIo_t *) 0 ;
+        track_t arg2 ;
+        char *result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: get_track_msf(p_cdio,i_track);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_CdIo_t,0) < 0) {
+                SWIG_croak("Type error in argument 1 of get_track_msf. Expected _p_CdIo_t");
+            }
+        }
+        arg2 = (track_t) SvUV(ST(1));
+        result = (char *)get_track_msf((CdIo_t const *)arg1,arg2);
+        
+        ST(argvi) = sv_newmortal();
+        if (result) {
+            sv_setpv((SV*)ST(argvi++), (char *) result);
+        } else {
+            sv_setsv((SV*)ST(argvi++), &PL_sv_undef);
+        }
         XSRETURN(argvi);
         fail:
         ;
@@ -3572,6 +3618,7 @@ static swig_command_info swig_commands[] = {
 {"perlcdioc::get_track_last_lsn", _wrap_get_track_last_lsn},
 {"perlcdioc::get_track_lba", _wrap_get_track_lba},
 {"perlcdioc::get_track_lsn", _wrap_get_track_lsn},
+{"perlcdioc::get_track_msf", _wrap_get_track_msf},
 {"perlcdioc::get_track_preemphasis", _wrap_get_track_preemphasis},
 {"perlcdioc::get_track_sec_count", _wrap_get_track_sec_count},
 {"perlcdioc::close_tray", _wrap_close_tray},

@@ -1,5 +1,5 @@
 /* -*- c -*-
-    $Id: perliso9660.swg,v 1.16 2006/03/16 21:48:42 rocky Exp $
+    $Id: perliso9660.swg,v 1.20 2006/04/01 11:35:28 rocky Exp $
 
     Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
@@ -19,7 +19,7 @@
     02110-1301 USA.
 */
 %define DOCSTRING 
-"This is a wrapper for The CD Input and Control library's ISO-9660 library
+"A Perl wrapper for The CD Input and Control library's ISO-9660 library
 See also the ISO-9660 specification. The freely available European
 equivalant standard is called ECMA-119."
 %enddef
@@ -499,7 +499,7 @@ char *strncpy_pad(const char src[], size_t len, enum strncpy_pad_check _check);
 %inline %{
 char *
 strncpy_pad(const char src[], size_t len, enum strncpy_pad_check _check) {
-  char *dst = calloc(sizeof(char), len);
+  char *dst = calloc(sizeof(char), len+1);
   return iso9660_strncpy_pad(dst, src, len, _check);
 }
 %}
@@ -607,6 +607,7 @@ IsoStat_t *iso9660_ifs_stat_translate (iso9660_t *p_iso,
   pointers for the files inside that directory. The caller must free the
   returned result.
 */
+%newobject fs_readdir; // free malloc'd return value
 IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[]);
 
 %inline %{
@@ -621,6 +622,7 @@ IsoStatList_t *fs_readdir (CdIo_t *p_cdio, const char psz_path[])
   pointers for the files inside that directory. The caller must free
   the returned result.
 */
+%newobject ifs_readdir; // free malloc'd return value
 IsoStatList_t *ifs_readdir (iso9660_t *p_iso, const char psz_path[]);
 
 %inline %{
@@ -865,7 +867,7 @@ $VERSION = $Device::Cdio::VERSION;
 
 =head1 NAME
 
-perliso9660 - lower-level wrapper to libiso9660, the ISO 9660 library the CD Input and Control package
+perliso9660 - lower-level wrapper to libiso9660, the ISO 9660 library of the CD Input and Control package
 
 =head1 SYNOPSIS
 

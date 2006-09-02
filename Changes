@@ -1,5 +1,18 @@
 Revision history for Device-Cdio
 
+0.2.4  Sept 2, 2006
+
+- Fix bad allocation in strncpy_pad
+
+- Fix bugs in Device::Cdio::ISO9600::FS::readddir() and 
+  Device::Cdio::ISO9600::FS::find_lsn(). Thanks to Shannon.
+
+- Fix bug in strncpy_pad().
+
+- Start MMC interface
+
+- Small documentation and example changes
+
 0.2.3  Mar 22, 2006
 
 - Take advantage of bugs fixed upstream in libcdio 0.77. In particular
@@ -70,4 +83,4 @@ this is straightforward based on continuing what's here.
 
 It was an incredible amount of work to get just this far.
 
-$Id: Changes,v 1.8 2006/03/23 04:01:09 rocky Exp $
+$Id: Changes,v 1.11 2006/09/02 16:35:19 rocky Exp $

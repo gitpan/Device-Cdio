@@ -1,10 +1,12 @@
 ---
 name: Device-Cdio
-version: v0.2.3
+version: v0.2.4
 author:
   - 'Rocky Bernstein <rocky@cpan.org>'
 abstract: CD Input and control library
 license: gpl
+resources:
+  license: http://www.opensource.org/licenses/gpl-license.php
 requires:
   ExtUtils::PkgConfig: 1.03
   Test::More: 0
@@ -12,25 +14,45 @@ requires:
 provides:
   Device::Cdio:
     file: lib/Device/Cdio.pm
-    version: v0.2.3
+    version: !!perl/hash:version
+      qv: 1
+      version:
+        - 0
+        - 2
+        - 4
   Device::Cdio::Device:
     file: lib/Device/Cdio/Device.pm
+    version: ~
   Device::Cdio::ISO9660:
     file: lib/Device/Cdio/ISO9660.pm
+    version: ~
   Device::Cdio::ISO9660::FS:
     file: lib/Device/Cdio/ISO9660/FS.pm
+    version: ~
   Device::Cdio::ISO9660::IFS:
     file: lib/Device/Cdio/ISO9660/IFS.pm
+    version: ~
   Device::Cdio::Track:
     file: lib/Device/Cdio/Track.pm
   Device::Cdio::Util:
     file: lib/Device/Cdio/Util.pm
+    version: ~
   perlcdio:
     file: lib/perlcdio.pm
+    version: ~
   perlcdioc:
     file: lib/perlcdio.pm
   perliso9660:
     file: lib/perliso9660.pm
+    version: ~
   perliso9660c:
     file: lib/perliso9660.pm
-generated_by: Module::Build version 0.2611
+  perlmmc:
+    file: lib/perlmmc.pm
+    version: ~
+  perlmmcc:
+    file: lib/perlmmc.pm
+generated_by: Module::Build version 0.2805
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

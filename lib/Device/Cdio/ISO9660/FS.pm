@@ -1,7 +1,7 @@
 package Device::Cdio::ISO9660::FS;
 require 5.8.6;
 #
-#    $Id: FS.pm,v 1.8 2006/03/13 03:30:49 rocky Exp $
+#    $Id: FS.pm,v 1.10 2006/08/05 08:02:57 rocky Exp $
 #
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
@@ -92,7 +92,7 @@ negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: FS.pm,v 1.8 2006/03/13 03:30:49 rocky Exp $';
+$revision = '$Id: FS.pm,v 1.10 2006/08/05 08:02:57 rocky Exp $';
 
 $Device::Cdio::ISO9660::FS::VERSION = $Device::Cdio::VERSION;
 
@@ -113,7 +113,7 @@ use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
 
 =head2 find_lsn
 
-find_lsn(lsn)->$stat_href
+  find_lsn(lsn)->$stat_href
 
 Find the filesystem entry that contains LSN and statu 
 return information about it. Undef is returned on error.
@@ -126,11 +126,15 @@ sub find_lsn {
     return undef if _extra_args(@args);
 
     if (!defined($lsn)) {
-      print "*** An LSN paramater must be given\n";
+      print "*** An LSN parameter must be given\n";
       return undef;
     }
 
-    my @values = perliso9660::fs_find_lsn($self->{iso9660}, $lsn);
+    my @values = perliso9660::fs_find_lsn($self->{cd}, $lsn);
+
+    # Remove the two input parameters
+    splice(@values, 0, 2) if @values > 2;
+
     return Device::Cdio::ISO9660::stat_array_to_href(@values);
 }
 
@@ -138,7 +142,7 @@ sub find_lsn {
 
 =head2 readdir
 
-readdir(dirname)->@iso_stat
+  readdir(dirname)->@iso_stat
 
 Read path (a directory) and return a list of iso9660 stat references
 
@@ -189,7 +193,7 @@ sub readdir {
       return undef;
     }
 
-    my @values = perliso9660::fs_readdir($self->{iso9660}, $dirname);
+    my @values = perliso9660::fs_readdir($self->{cd}, $dirname);
 
     # Remove the two input parameters
     splice(@values, 0, 2) if @values > 2;
@@ -206,7 +210,7 @@ sub readdir {
 
 =head2 read_pvd
 
-read_pvd()->pvd
+  read_pvd()->pvd
 
 Read the Super block of an ISO 9660 image. This is the rimary Volume
 Descriptor (PVD) and perhaps a Supplemental Volume Descriptor if
@@ -226,7 +230,7 @@ sub read_pvd {
 
 =head2 read_superblock
 
-read_superblock(iso_mask=$libiso9660::EXTENSION_NONE)->bool
+  read_superblock(iso_mask=$libiso9660::EXTENSION_NONE)->bool
 
 Read the Super block of an ISO 9660 image. This is the rimary Volume
 Descriptor (PVD) and perhaps a Supplemental Volume Descriptor if
@@ -247,7 +251,7 @@ sub read_superblock {
 
 =head2 stat
 
-stat(path, translate=0)->\%stat
+  stat(path, translate=0)->\%stat
 
 Return file status for path name psz_path. NULL is returned on error.
 

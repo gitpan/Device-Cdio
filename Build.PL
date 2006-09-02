@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: Build.PL,v 1.23 2006/03/04 01:05:58 rocky Exp $
+# $Id: Build.PL,v 1.25 2006/08/05 08:48:12 rocky Exp $
 #    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -131,8 +131,6 @@ sub link_c {
   my $objects = $p->{objects} || [];
   
   unless ($self->up_to_date([$obj_file, @$objects], $lib_file)) {
-    $self->prelink_c($to, $file_base) if $self->need_prelink_c;
-
     my @linker_flags = $self->split_like_shell($p->{extra_linker_flags});
     my @lddlflags = $self->split_like_shell($cf->{lddlflags});
     my @shrp = $self->split_like_shell($cf->{shrpenv});
@@ -346,6 +344,8 @@ my $builder = $class->new(
 			       'disc.swg', 'device_const.swg', 'disc.swg',
 			       'read.swg', 'track.swg', 'types.swg']],
 			     ['perliso9660.swg', 
+			      ['types.swg']],
+			     ['perlmmc.swg', 
 			      ['types.swg']] ],
 			   );
 

@@ -1232,7 +1232,7 @@ name_translate_ext(const char *psz_oldname, uint8_t i_joliet_level) {
 
 char *
 strncpy_pad(const char src[], size_t len, enum strncpy_pad_check _check) {
-  char *dst = calloc(sizeof(char), len);
+  char *dst = calloc(sizeof(char), len+1);
   return iso9660_strncpy_pad(dst, src, len, _check);
 }
 

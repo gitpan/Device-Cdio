@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#$Id: iso1.pl,v 1.4 2006/03/03 03:17:18 rocky Exp $
+#$Id: iso1.pl,v 1.5 2006/03/31 02:29:34 rocky Exp $
 #
 #  Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 #  
@@ -48,7 +48,7 @@ $iso_image_fname = $ARGV[0] if @ARGV >= 1;
 my $iso = Device::Cdio::ISO9660::IFS->new(-source=>$iso_image_fname);
   
 if (!defined($iso)) {
-    printf "Sorry, couldn't open %s as an ISO-9660 image\n", $iso_image_fname;
+    printf "Sorry, couldn't open %s as an ISO-9660 image.\n", $iso_image_fname;
     exit 1;
 }
 

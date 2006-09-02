@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: 10.cdda.t,v 1.4 2006/02/10 18:17:51 rocky Exp $
+# $Id: 10.cdda.t,v 1.6 2006/08/07 11:38:27 rocky Exp $
 
 ##Test functioning CD-DA
 
@@ -12,7 +12,7 @@ use lib '../lib';
 use blib;
 
 use Device::Cdio::Device;
-use Test::Simple tests => 9;
+use Test::Simple tests => 10;
 
 my $cuefile = '../data/cdda.cue';
 my $device = Device::Cdio::Device->new(-source=>$cuefile);
@@ -34,4 +34,5 @@ ok($device->get_track_for_lsn($t->get_last_lsn())->{track} == $t->{track},
 $t=$device->get_first_track();
 ok($t->{track} == 1, 'get_first_track');
 ok($t->get_format() eq 'audio', 'get_track_format');
+ok($t->get_msf() eq "00:02:00", "get_msf");
 $device->close();

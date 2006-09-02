@@ -65,6 +65,7 @@ package perlcdio;
 *get_track_last_lsn = *perlcdioc::get_track_last_lsn;
 *get_track_lba = *perlcdioc::get_track_lba;
 *get_track_lsn = *perlcdioc::get_track_lsn;
+*get_track_msf = *perlcdioc::get_track_msf;
 *get_track_preemphasis = *perlcdioc::get_track_preemphasis;
 *get_track_sec_count = *perlcdioc::get_track_sec_count;
 *close_tray = *perlcdioc::close_tray;
