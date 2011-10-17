@@ -1,22 +1,5 @@
 /* -*- c -*-
-    $Id: perliso9660.swg,v 1.20 2006/04/01 11:35:28 rocky Exp $
-
-    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-    02110-1301 USA.
+  See end for copyright and license.
 */
 %define DOCSTRING 
 "A Perl wrapper for The CD Input and Control library's ISO-9660 library
@@ -38,7 +21,6 @@ equivalant standard is called ECMA-119."
 
 /* Various libcdio constants and typedefs */
 %include "types.swg"
-%include "compat.swg"
 
 %include "typemaps.i"
 
@@ -107,7 +89,7 @@ typedef iso9660_stat_t IsoStat_t;
 typedef CdioList_t IsoStatList_t;
 typedef iso9660_stat_t IsoStat_t;
 
-%typemap(perl5,out) IsoStat_t *{   
+%typemap(out) IsoStat_t *{   
     // $1 is of type IsoStatList_t
     iso9660_stat_t *p_statbuf = result;
 
@@ -125,7 +107,7 @@ typedef iso9660_stat_t IsoStat_t;
  out: ;
 }
 
-%typemap(perl5,out) IsoStatList_t *{   
+%typemap(out) IsoStatList_t *{   
     // $1 is of type IsoStatList_t
     CdioList_t *p_entlist   = result;
     CdioListNode_t *p_entnode;
@@ -217,7 +199,7 @@ bool iso9660_ifs_fuzzy_read_superblock (iso9660_t *p_iso,
 %rename iso9660_close close;
 bool iso9660_close (iso9660_t * p_iso);
 
-%typemap(perl5,out) buf_t {   
+%typemap(out) buf_t {   
   /* $1 is of type buf_t */
   ST(argvi) = sv_newmortal();
   if (result) {
@@ -317,7 +299,7 @@ iso9660_dtime_t *
 set_dtime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon, 
 	    int tm_year)
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0, 0 };
   static iso9660_dtime_t dtime;
   iso9660_set_dtime (&tm, &dtime);
   return &dtime;
@@ -337,7 +319,7 @@ set_ltime ( int tm_sec, int tm_min, int tm_hour, int tm_mday, int tm_mon,
 	    int tm_year)
 
 {
-  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0 };
+  struct tm tm = { tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, 0, 0, 0 };
   static iso9660_ltime_t ldate;
   iso9660_set_ltime (&tm, &ldate);
   return &ldate;
@@ -452,7 +434,7 @@ char * name_translate(const char *psz_oldname);
 %inline %{
 char *
 name_translate(const char *psz_oldname) {
-  char *psz_newname=calloc(sizeof(char), strlen(psz_oldname));
+  char *psz_newname=calloc(sizeof(char), strlen(psz_oldname)+1);
   iso9660_name_translate(psz_oldname, psz_newname);
   return psz_newname;
 }
@@ -477,7 +459,7 @@ char * name_translate_ext(const char *psz_oldname, uint8_t i_joliet_level);
 %inline %{
 char * 
 name_translate_ext(const char *psz_oldname, uint8_t i_joliet_level) {
-  char *psz_newname=calloc(sizeof(char), strlen(psz_oldname));
+  char *psz_newname=calloc(sizeof(char), strlen(psz_oldname)+1);
   iso9660_name_translate_ext(psz_oldname, psz_newname, i_joliet_level);
   return psz_newname;
 }
@@ -862,7 +844,7 @@ bool iso9660_ifs_is_xa (const iso9660_t * p_iso);
 
 import Device::Cdio::VERSION;
 $VERSION = $Device::Cdio::VERSION;
-
+use strict;
 =pod
 
 =head1 NAME
@@ -1412,11 +1394,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -1425,8 +1407,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut
 %}

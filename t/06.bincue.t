@@ -1,18 +1,14 @@
-#!/usr/bin/perl -w
-# $Id: 06.bincue.t,v 1.4 2006/02/13 02:20:20 rocky Exp $
-
+#!/usr/bin/env perl
 #Test functioning of BIN/CUE image routines
 
 use strict;
-
-BEGIN {
-    chdir 't' if -d 't';
-}
+use warnings;
 use lib '../lib';
 use blib;
 
 use Device::Cdio::Device;
-use Test::Simple tests => 14;
+use Test::More tests => 14;
+note "Test BIN/CUE image routines";
 
 my $cuefile="data/cdda.cue";
 $cuefile = '../data/cdda.cue' if ! -f $cuefile;
@@ -51,14 +47,8 @@ $result = Device::Cdio::is_device($cuefile);
 ok(!$result, "is_device(tocfile)");
 $result = $device->get_media_changed();
 ok(!$result, "bincue: get_media_changed");
-if ($perlcdio::VERSION_NUM >= 77) {
-    # There's a bug in libcdio 0.76 that causes these to crash
-    $drc = $device->set_blocksize(2048);
-    ok($perlcdio::DRIVER_OP_UNSUPPORTED == $drc, "set blocksize");
-    $drc = $device->set_speed(5);
-    ok($perlcdio::DRIVER_OP_UNSUPPORTED == $drc, "set speed");
-} else {
-    ok(1, "skip set blocksize");
-    ok(1, "skip set speed");
-}
+$drc = $device->set_blocksize(2048);
+ok($perlcdio::DRIVER_OP_UNSUPPORTED == $drc, "set blocksize");
+$drc = $device->set_speed(5);
+ok($perlcdio::DRIVER_OP_UNSUPPORTED == $drc, "set speed");
 $device->close();

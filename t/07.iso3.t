@@ -1,10 +1,9 @@
-#!/usr/bin/perl -w
-# $Id: 07.iso3.t,v 1.1 2006/03/03 21:11:09 rocky Exp $
-
+#!/usr/bin/env perl
 # Test of some ISO9660::IFS routines
 # This is similar to example/iso2.pl
 
 use strict;
+use warnings;
 use Config;
 
 BEGIN {
@@ -21,6 +20,7 @@ use File::Spec;
 
 use POSIX;
 use Test::More tests => 3;
+note 'Test ISO9660::IFS routines';
 
 # The test CD image
 my $ISO9660_IMAGE_PATH="../data";
@@ -400,4 +400,3 @@ ok(substr($file_contents, 0, $len) eq substr($file_contents, 0, $len),
           'File contents comparison') ;
 
 $iso->close();
-exit 0;

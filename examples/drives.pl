@@ -1,22 +1,18 @@
 #!/usr/bin/perl -w
-#$Id: drives.pl,v 1.2 2006/02/10 13:39:24 rocky Exp $
+#  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 #
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Program to read CD blocks. See read-cd from the libcdio distribution
 # for a more complete program.
@@ -34,8 +30,6 @@ use Device::Cdio::Device;
 use Device::Cdio::Track;
 
 use vars qw($0 $program $pause %opts);
-
-my $vcid ='$Id: drives.pl,v 1.2 2006/02/10 13:39:24 rocky Exp $';
 
 sub print_drive_class($$$) {
     my ($msg, $bitmask, $any) = @_;

@@ -1,25 +1,7 @@
 package Device::Cdio::ISO9660;
-require 5.8.6;
+require 5.10.1;
 #
-#    $Id: ISO9660.pm,v 1.10 2006/03/23 13:20:33 rocky Exp $
-#
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-#    02110-1301 USA.
-#
+#  See end for copyright and license.
 
 =pod
 
@@ -31,7 +13,7 @@ Device::Cdio::ISO9660 - Module for ISO 9660 handling
 
 This encapsulates IS9660 filesystem handling. This library however
 needs to be used in conjunction with L<Device::Cdio>,
-L<Device::Cdio::ISO9660::IFS> and L<Device::Cdio::ISO::FS>.
+L<Device::Cdio::ISO9660::IFS> and L<Device::Cdio::ISO9660::FS>.
 
     use Device::Cdio::ISO9660;
     $name = Device::Cdio::ISO9660::name_translate('COPYING.;1');
@@ -73,30 +55,23 @@ dashes for the subsequent parameters.
 
 In the documentation below and elsewhere in this package the parameter
 name that can be used in this style of call is given in the parameter
-list. For example, for "close tray the documentation below reads:
+list. For example, for C<name_translate> the documentation below reads:
 
-   close_tray(drive=undef, driver_id=$perlcdio::DRIVER_UNKNOWN) 
-    -> ($drc, $driver_id)
+   name_translate(name, joliet_level=0) -> $str
 
-So the parameter names are "drive", and "driver_id". Neither parameter
-is required. If "drive" is not specified, a value of "undef" will be
-used. And if "driver_id" is not specified, a value of
-$perlcdio::DRIVER_UNKNOWN is used.
+So the parameter names are "name" and "joliet_level". Only the "name"
+parameter is required. If "joliet_level" is not specified, a value of
+0 will be used. The return value is a string.
 
 The older, more traditional style of positional parameters is also
-supported. So the "have_driver example from above can also be written:
-
-    Cdio::have_driver('GNU/Linux')
+supported which is shown in the synopsis above.
 
 Finally, since no parameter name can be confused with a an integer,
 negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: ISO9660.pm,v 1.10 2006/03/23 13:20:33 rocky Exp $';
-
 $Device::Cdio::ISO9660::VERSION = $Device::Cdio::VERSION;
-
 use warnings;
 use strict;
 use perliso9660;
@@ -237,7 +212,7 @@ sub pathname_valid_p {
 
 =head2 name_translate
 
-    name_translate(name, joliet_level=0)->str
+    name_translate(name, joliet_level=0)->$str
 
 Convert an ISO-9660 file name of the kind that is that stored in a ISO
 9660 directory entry into what's usually listed as the file name in a
@@ -362,11 +337,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2011 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -375,7 +350,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

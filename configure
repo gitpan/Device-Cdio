@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.1 2006/02/08 14:18:28 rocky Exp $
+# $Id$
 echo "Psst... This package is is build via 'perl Build.PL'"
 echo "Just a moment while I transfer your call."
 perl ./Build.PL

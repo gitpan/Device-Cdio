@@ -1,21 +1,6 @@
 /* -*- c -*-
-    $Id: perlcdio.swg,v 1.8 2006/03/03 03:17:18 rocky Exp $
-
-    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
+  See end for license.
 */
 %define DOCSTRING 
 "This is a wrapper for The CD Input and Control library (libcdio) which
@@ -29,12 +14,11 @@ use this library."
 #include <cdio/cdio.h>
 #include <cdio/audio.h>
 #include <cdio/cd_types.h>
+#include <cdio/iso9660.h>
 %}
 
 #include <cdio/cdio.h> 
 #include <cdio/audio.h>
-
-%include "compat.swg"
 
 %include "typemaps.i"
 /*%include "cstring.i"*/
@@ -76,10 +60,22 @@ generally not true: usually changes to the C-to-python translation,
 pycdio, do result in small, but obvious and straightforward changes to
 the abstraction layer cdio.)
 */
+
+%feature("autodoc",
+"Returns the libcdio version string, i.e. the library Device::Cdio
+is currently using.");
+%inline %{
+const char * cdio_version()
+{
+    return cdio_version_string;
+}
+%}
+
+
 %perlcode %{
 import Device::Cdio::VERSION;
 $VERSION = $Device::Cdio::VERSION;
-
+use strict;
 =pod
 
 =head1 NAME
@@ -536,6 +532,12 @@ leadout track.
 
 =head1 METHODS
 
+=head2 cdio_version
+
+    perlcdio::cdio_version
+
+Returns the libcdio version string Device::Cdio is currently linked with.
+
 =head2 this
 
 This seems to be an artifact of SWIG. 
@@ -551,11 +553,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -564,8 +566,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut
 %}

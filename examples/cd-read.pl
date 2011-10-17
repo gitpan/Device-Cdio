@@ -1,22 +1,19 @@
 #!/usr/bin/perl -w
-my $vcid ='$Id: cd-read.pl,v 1.2 2006/03/02 07:20:19 rocky Exp $';
 #
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+#  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 #
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Program to read CD blocks. See read-cd from the libcdio distribution
 # for a more complete program.
@@ -54,7 +51,7 @@ sub init() {
 
 # Show the CVS version id string and quit.
 sub show_version() {
-    print "$program version $vcid\n";
+    print "$program version $Device::Cdio::VERSION\n";
     exit 1;
 }
 
@@ -106,6 +103,32 @@ sub process_options() {
   }
 }
 
+# Standard C library's isprint() in Ruby
+sub isprint($) {
+    return $_[0] =~ m{^[: -~]$} ;
+}
+
+# Print a hex dump and string interpretation of buffer.
+# If just_hex is true, then show only the hex dump.
+sub hexdump ($) {
+    my $buffer = $_[0];
+    foreach my $i (0 .. length($buffer) - 1) {
+	printf "0x%04x: ", $i if $i % 16 == 0;
+	printf "%02x", ord(substr($buffer, $i, 1));
+	printf " " if $i % 2 == 1;
+	if ($i % 16 == 15) {
+	    printf "  ";
+	    foreach my $j ($i-15 .. $i) {
+		printf "%s", 
+		isprint(substr($buffer, $j, 1)) ?
+		    substr($buffer, $j, 1) : '.';
+	    }
+	    print "\n";
+	}
+    }
+    print "\n";
+}
+
 init();
 process_options();
 
@@ -136,7 +159,7 @@ if (defined($read_mode)) {
 	$d->read_data_blocks($opts{start}, $opts{number});
 }
 if ($perlcdio::DRIVER_OP_SUCCESS == $drc) {
-    print $data, "\n";
+    hexdump($data);
 } else {
     print "Error reading block $opts{start} mode $opts{mode} on $drive_name\n";
     printf "Return code message: %s", Device::Cdio::driver_strerror($drc);

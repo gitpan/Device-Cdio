@@ -1,21 +1,18 @@
 /* -*- c -*-
-    $Id: read.swg,v 1.5 2006/02/28 12:36:58 rocky Exp $
+  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 
-    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /* See <cdio/read.h> for more extensive documentation. */
 
@@ -49,7 +46,7 @@ read_cd(const CdIo_t *p_cdio, my_ssize_t i_size,
 %}
 
 typedef char * buf_t;
-%typemap(perl5,out) buf_t {   
+%typemap(out) buf_t {   
   /* $1 is of type buf_t */
   ST(argvi) = sv_newmortal();
   if (result) {
@@ -63,12 +60,12 @@ typedef char * buf_t;
   }
 }
 
-%apply long unsigned int *OUTPUT { long unsigned int *drc };
+%apply long int *OUTPUT { long int *drc };
 /* NOTE: arg 4 *must* be the size of the buf for the buf_t typemap. */
 buf_t read_sectors(const CdIo_t *p_cdio, lsn_t i_lsn, 
 		       cdio_read_mode_t read_mode, my_ssize_t i_size, 
 		       /*out*/ my_ssize_t *pi_size, 
-		       /*out*/ long unsigned int *drc);
+		       /*out*/ long int *drc);
 
 %inline %{
 typedef char *buf_t;
@@ -77,7 +74,7 @@ buf_t
 read_sectors(const CdIo_t *p_cdio, lsn_t i_lsn, 
 	     cdio_read_mode_t read_mode,  my_ssize_t i_size, 
 	     /*out*/ my_ssize_t *pi_size, 
-	     /*out*/ long unsigned int *drc)
+	     /*out*/ long int *drc)
 {
 
   char *p_buf;
@@ -122,7 +119,7 @@ buf_t
 read_data_bytes(const CdIo_t *p_cdio, lsn_t i_lsn, int16_t i_blocksize, 
 		my_ssize_t i_size, 
 		/*out*/ my_ssize_t *pi_size,
-		long unsigned int *drc);
+		long int *drc);
 
 %inline %{
 /* NOTE: arg 4 *must* be the size of the buf for the buf_t typemap. */
@@ -130,7 +127,7 @@ buf_t
 read_data_bytes(const CdIo_t *p_cdio, lsn_t i_lsn, 
 		int16_t i_blocksize, my_ssize_t i_size, 
 		/*out*/ my_ssize_t *pi_size,
-		/*out*/ long unsigned int *drc) {
+		/*out*/ long int *drc) {
   uint32_t i_blocks = i_size / i_blocksize;
   char *p_buf;
 
@@ -165,3 +162,15 @@ read_data_bytes(const CdIo_t *p_cdio, lsn_t i_lsn,
   return p_buf;
 }
 %}
+
+iso9660_pvd_t *cdio_read_pvd ( const CdIo_t *p_cdio );
+%inline %{
+iso9660_pvd_t *cdio_read_pvd ( const CdIo_t *p_cdio ) {
+  static iso9660_pvd_t pvd;
+  int rc = cdio_read_data_sectors( p_cdio, &pvd, ISO_PVD_SECTOR,
+                ISO_BLOCKSIZE, 1);
+  if (rc < 0) return NULL;
+  return &pvd;
+ }
+%}
+

@@ -1,22 +1,18 @@
-#!/usr/bin/perl -w
-# $Id: 05.ops.t,v 1.2 2006/02/09 19:09:21 rocky Exp $
-
+#!/usr/bin/env perl
 # Test running miscellaneous operations
 # No assumption about the CD-ROM drives is made, so
 # we're just going to run operations and see that they
 # don't crash.
 
 use strict;
-
-BEGIN {
-    chdir 't' if -d 't';
-}
+use warnings;
 use lib '../lib';
 use blib;
 
 use Device::Cdio;
 use Device::Cdio::Device;
-use Test::Simple tests => 6;
+use Test::More tests => 6;
+note 'Test running miscellaneous operations';
 
 my @drives = Device::Cdio::get_devices();
 ok ( 1 , 'Device::Cdio::get_devices');

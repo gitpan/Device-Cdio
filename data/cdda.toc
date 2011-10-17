@@ -1,4 +1,4 @@
-// $Id: cdda.toc,v 1.1.1.1 2006/02/08 05:06:18 rocky Exp $
+// $Id$
 
 // Language number should always start with 0
 LANGUAGE 0 {

@@ -1,25 +1,7 @@
 package Device::Cdio;
-require 5.8.6;
+require 5.10.1;
 #
-#    $Id: Cdio.pm,v 1.21 2006/09/02 13:04:42 rocky Exp $
-#
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-#    02110-1301 USA.
-#
+#  See end for copyright and license.
 
 =pod
 
@@ -29,7 +11,7 @@ Device::Cdio - Module for CD Input and Control library.
 
 =cut 
 
-use version; $VERSION = qv('0.2.4');
+use version; $VERSION = qv('0.3.0');
 
 =pod 
 
@@ -42,9 +24,9 @@ can use this library.
     use Device::Cdio;
     use Device::Cdio::Device;
 
-    @cd_drives = Device::Cdio::get_devices($perlcdio::DRIVER_DEVICE);
-    @cd_drives = Device::Cdio::get_devices_with_cap($perlcdio::FS_AUDIO, 0);
-    foreach my $drive (@cd_drives) {
+    $cd_drives = Device::Cdio::get_devices($perlcdio::DRIVER_DEVICE);
+    $cd_drives = Device::Cdio::get_devices_with_cap($perlcdio::FS_AUDIO, 0);
+    foreach my $drive (@$cd_drives) {
        print "Drive $drive\n";
     }
     foreach my $driver_name (sort keys(%Device::Cdio::drivers)) {
@@ -102,7 +84,7 @@ used. And if "driver_id" is not specified, a value of
 $perlcdio::DRIVER_UNKNOWN is used.
 
 The older, more traditional style of positional parameters is also
-supported. So the "have_driver example from above can also be written:
+supported. So the C<have_driver> example from above can also be written:
 
     Device::Cdio::have_driver('GNU/Linux')
 
@@ -111,14 +93,12 @@ negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: Cdio.pm,v 1.21 2006/09/02 13:04:42 rocky Exp $';
-
 use warnings;
 use strict;
 use perlcdio;
 use Carp;
 
-use vars qw($VERSION $revision @EXPORT_OK @EXPORT @ISA %drivers);
+use vars qw($VERSION @EXPORT_OK @EXPORT @ISA %drivers);
 use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
 
 @ISA = qw(Exporter);
@@ -252,7 +232,7 @@ sub get_default_device_driver {
 
 =head2 get_devices
 
-get_devices(driver_id=$Cdio::DRIVER_UNKNOWN)->@devices
+$revices = get_devices(driver_id=$Cdio::DRIVER_UNKNOWN);
 
 Return an array of device names. If you want a specific devices for a
 driver, give that device. If you want hardware devices, give
@@ -271,11 +251,8 @@ sub get_devices {
     my($driver_id, @args) = _rearrange(['DRIVER_ID'], @p);
     return undef if _extra_args(@args);
     $driver_id = $perlcdio::DRIVER_DEVICE if !defined($driver_id);
-    # There's a bug in the swig code in that the input parameter
-    # is left on the stack
-    my @ret = perlcdio::get_devices($driver_id);
-    shift @ret;
-    return @ret;
+    my $ret = perlcdio::get_devices($driver_id);
+    return wantarray ? @$ret : $ret;
 }
 
 =pod
@@ -286,7 +263,7 @@ get_devices_ret($driver_id)->(@devices, $driver_id)
 
 Like get_devices, but we may change the p_driver_id if we were given
 $perlcdio::DRIVER_DEVICE or $perlcdio::DRIVER_UNKNOWN.  This is
-because often one wants to get a drive name and then *open* it
+because often one wants to get a drive name and then I<open> it
 afterwords. Giving the driver back facilitates this, and speeds things
 up for libcdio as well.
 
@@ -297,18 +274,15 @@ sub get_devices_ret {
     my($driver_id, @args) = _rearrange(['DRIVER_ID'], @p);
     return undef if _extra_args(@args);
     $driver_id = $perlcdio::DRIVER_DEVICE if !defined($driver_id);
-    # There's a bug in the swig code in that the input parameter
-    # is left on the stack
-    my @ret = perlcdio::get_devices_ret($driver_id);
-    shift @ret;
-    return @ret;
+    my $ret = perlcdio::get_devices_ret($driver_id);
+    return wantarray ? @$ret : $ret;
 }
 
 =pod
 
 =head2 get_devices_with_cap
 
-get_devices_with_cap($capabilities, $any)->@devices
+$devices = get_devices_with_cap($capabilities, $any);
 
 Get an array of device names in search_devices that have at least
 the capabilities listed by the capabilities parameter.
@@ -331,11 +305,8 @@ sub get_devices_with_cap {
     my($cap, $any, @args) = _rearrange(['CAPABILITIES', 'ANY'], @p);
     return undef if _extra_args(@args);
     $any = 1 if !defined($any);
-    # There's a bug in the swig code in that the input parameters
-    # are left on the stack
-    my @ret = perlcdio::get_devices_with_cap($cap, $any);
-    shift @ret; shift @ret;
-    return @ret;
+    my $ret = perlcdio::get_devices_with_cap($cap, $any);
+    return wantarray ? @$ret : $ret;
 }
 
 =pod
@@ -354,11 +325,8 @@ sub get_devices_with_cap_ret {
     my($cap, $any, @args) = _rearrange(['CAPABILITIES', 'ANY'], @p);
     return undef if _extra_args(@args);
     $any = 1 if !defined($any);
-    # There's a bug in the swig code in that the input parameters
-    # are left on the stack
-    my @ret = perlcdio::get_devices_with_cap($cap, $any);
-    shift @ret; shift @ret;
-    return @ret;
+    my $ret = perlcdio::get_devices_with_cap($cap, $any);
+    return wantarray ? @$ret : $ret;
 }
 
 =pod
@@ -632,11 +600,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2011 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -645,7 +613,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

@@ -1,10 +1,9 @@
-#!/usr/bin/perl -w
-# $Id: 07.iso2.t,v 1.2 2006/08/05 08:02:57 rocky Exp $
-
+#!/usr/bin/env perl
 # Test of some ISO9660::IFS routines
 # This is similar to example/iso2.pl
 
 use strict;
+use warnings;
 use Config;
 
 BEGIN {
@@ -21,17 +20,18 @@ use File::Spec;
 
 use POSIX;
 use Test::More tests => 5;
+note 'Test ISO9660::IFS routines';
 
 # The test CD image
 my $CD_IMAGE_PATH="../data";
 my $cd_image_fname=File::Spec->catfile($CD_IMAGE_PATH, "isofs-m1.cue");
-my $local_filename="COPYING";
+my $local_filename='COPYING.;1';
 
 my $cd = Device::Cdio::ISO9660::FS->new(-source=>$cd_image_fname);
   
 ok(defined($cd), "Open CD image $cd_image_fname") ;
 
-my $good_stat = { LSN=>26, 'filename'=>'COPYING', is_dir=>'', 
+my $good_stat = { LSN=>26, 'filename'=>$local_filename, is_dir=>'', 
 		  sec_size=>9, size=>17992 };
 
 my $stat_href = $cd->find_lsn(26);
@@ -48,9 +48,9 @@ my @good_stat = ( { LSN=>23, 'filename'=>'.', is_dir=>1,
 		  sec_size=>1, size=>2048 },
 		  { LSN=>23, 'filename'=>'..', is_dir=>1, 
 		  sec_size=>1, size=>2048 },
-		  { LSN=>26, 'filename'=>'COPYING', is_dir=>'', 
+		  { LSN=>26, 'filename'=>'COPYING.;1', is_dir=>'', 
 		    sec_size=>9, size=>17992 },
-		  { LSN=>24, 'filename'=>'doc', is_dir=>1, 
+		  { LSN=>24, 'filename'=>'DOC', is_dir=>1, 
 		    sec_size=>1, size=>2048 } );
 
 is_deeply(\@iso_stat, \@good_stat, "Read directory: readdir('/')");
@@ -417,4 +417,3 @@ ok(substr($file_contents, 0, $len) eq substr($file_contents, 0, $len),
           'File contents comparison') ;
 
 $cd->close();
-exit 0;

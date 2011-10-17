@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-# $Id: 10.read.t,v 1.2 2006/02/10 17:16:59 rocky Exp $
-
+#!/usr/bin/env perl
 # Test functioning of read routines
 
 use strict;
+use warnings;
 
 BEGIN {
     chdir 't' if -d 't';
@@ -12,9 +11,11 @@ use lib '../lib';
 use blib;
 
 use Device::Cdio::Device;
-use Test::Simple tests => 6;
+use Test::More tests => 6;
+note "Test functioning of read routines";
 
-my $cuefile="../data/isofs-m1.cue";
+use Cwd;
+my $cuefile= Cwd::abs_path("../data/isofs-m1.cue");
 my $device = Device::Cdio::Device->new(-source=>$cuefile);
 
 # Read the ISO Primary Volume descriptor

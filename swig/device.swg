@@ -1,21 +1,18 @@
 /* -*- c -*-
-    $Id: device.swg,v 1.16 2006/03/04 01:05:58 rocky Exp $
+  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 
-    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /* See <cdio/device.h> for more extensive documentation. */
 
@@ -30,27 +27,41 @@
 typedef char ** DeviceList_t;
 %}
 
-%typemap(perl5,out) DeviceList_t {   
-    // $1 is of type DeviceList_t
-    char **p   = result;
-    unsigned int num = 0;
-
-    if (!result) goto out;
-
-    /* Figure out how many items in the array */
-    for (p = $1; *p; p++) {
-      num++;
+%typemap(out) DeviceList_t {   
+    /* char ** to array SVp*/
+    /*
+    AV *myav;
+    SV **svs;
+    int i = 0,len = 0;
+    */
+     /* Figure out how many elements we have */
+    /*
+    while ($1[len])
+        len++;
+    svs = (SV **) malloc(len*sizeof(SV *));
+    for (i = 0; i < len ; i++) {
+        svs[i] = sv_newmortal();
+        sv_setpv((SV*)svs[i],$1[i]);
+        //svs[i] = sv_2mortal((SV*)newSVpv($1[i], 0));
+    };
+    myav =	av_make(len,svs);
+    free(svs);
+    $result = newRV_noinc((SV*)myav);
+    sv_2mortal($result);
+    */
+    // or: shorter version
+    AV *myav;
+    int i =0;
+    myav = newAV();
+    char **p = $1;
+    while (*p) {
+        av_store(myav, i, (SV*)newSVpv(*p, 0));
+        i++;p++;
     }
-
-    /* For each element in the array of strings, create a new
-     * mortalscalar, and stuff it into the above array. */
-    for (p = $1; *p; p++) {
-      /* Have perl compute the length of the string using strlen() */
-      XPUSHs(sv_2mortal(newSVpv(*p, 0)));
-    }
-    argvi += num;
+    $result = newRV_noinc((SV*)myav);
+    sv_2mortal($result);
+    argvi++;
     cdio_free_device_list($1);
- out: ;
 }
 
 /*
@@ -192,7 +203,7 @@ get_default_device_driver(driver_id_t driver_id, driver_id_t *p_out_driver_id)
 }
 %}
 
-%rename cdio_get_devices get_devices; 
+//%rename cdio_get_devices get_devices; 
 /*! Return an array of device names. If you want a specific
   devices for a driver, give that device. If you want hardware
   devices, give DRIVER_DEVICE and if you want all possible devices,
@@ -206,6 +217,14 @@ get_default_device_driver(driver_id_t driver_id, driver_id_t *p_out_driver_id)
 */
 DeviceList_t cdio_get_devices (driver_id_t driver_id);
 
+DeviceList_t get_devices(driver_id_t driver_id);
+
+
+%inline %{
+DeviceList_t get_devices(driver_id_t driver_id) {
+    return cdio_get_devices(driver_id);
+}
+%}
 /* Like cdio_get_devices, but we may change the p_driver_id if we
    were given DRIVER_DEVICE or DRIVER_UNKNOWN. This is because
    often one wants to get a drive name and then *open* it
@@ -243,8 +262,6 @@ DeviceList_t get_devices_with_cap (unsigned int capabilities, bool b_any);
 %inline %{
 DeviceList_t 
 get_devices_with_cap (unsigned int capabilities, bool b_any) {
-  /* FIXME: ? libcdio allows one to specify a list (char **) of devices
-     to search. Don't know how to do that via SWIG though. */
   return cdio_get_devices_with_cap (NULL, (cdio_fs_anal_t) capabilities,
 				    b_any);
  }
@@ -263,8 +280,6 @@ DeviceList_t get_devices_with_cap_ret (unsigned int capabilities, bool b_any,
 DeviceList_t
 get_devices_with_cap_ret (unsigned int capabilities, bool b_any,
 			  driver_id_t *p_out_driver_id) {
-  /* FIXME: ? libcdio allows one to specify a list (char **) of devices
-     to search. Don't know how to do that via SWIG though. */
   return cdio_get_devices_with_cap_ret (NULL, 
 					(cdio_fs_anal_t) capabilities, b_any, 
 					p_out_driver_id);
@@ -411,30 +426,29 @@ int cdio_get_media_changed(CdIo_t *p_cdio);
 %inline %{
 typedef char ** HWInfo_t;
 %}
-
-%typemap(perl5,out) HWInfo_t {   // All functions returning char ** 
-                                // get this typemap
-    // $1 is of type char **
-    char **p   = $1;
-    unsigned int num = 0;
-
-    /* Figure out how many items in the array */
-    for (p = $1; *p; p++) {
-      num++;
+%typemap(out) HWInfo_t {
+    /* char ** to array SVp*/
+    AV *myav;
+    SV **svs;
+    int i = 0,len = 0;
+    /* no test
+    if(!$1) {
+        $result = newSV(0);
     }
-
-    if (argvi >= items) {            
-      /* Extend the stack by num objects */
-      EXTEND(sp, num);
-    }
-    /* For each element in the array of strings, create a new
-     * mortalscalar, and stuff it into the above array. */
-    for (p = $1; *p; p++) {
-      /* Have perl compute the length of the string using strlen() */
-      PUSHs(sv_2mortal(newSVpv(*p, 0)));
-    }
-    /* FIXME: the + 1 is because p_cdio is still on the stack. */
-    argvi += num + 1;
+    */
+    /* Figure out how many elements we have */
+    while ($1[len])
+        len++;
+    svs = (SV **) malloc(len*sizeof(SV *));
+    for (i = 0; i < len ; i++) {
+        svs[i] = sv_newmortal();
+        sv_setpv((SV*)svs[i],$1[i]);
+    };
+    myav =	av_make(len,svs);
+    free(svs);
+    $result = newRV_noinc((SV*)myav);
+    sv_2mortal($result);
+    argvi++;
 }
 
 /* 
@@ -462,6 +476,10 @@ HWInfo_t get_hwinfo ( const CdIo_t *p_cdio, int *drc)
   return (const HWInfo_t) hwinfo;
 }
 %}
+
+#include <cdio/mmc.h>
+%rename mmc_get_tray_status get_tray_status;
+int mmc_get_tray_status(const CdIo_t *p_cdio);
 
 %rename cdio_set_blocksize set_blocksize;
 %feature("autodoc", 

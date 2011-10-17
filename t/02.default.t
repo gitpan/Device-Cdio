@@ -1,17 +1,16 @@
-#!/usr/bin/perl -w
-# $Id: 02.default.t,v 1.2 2006/02/09 19:09:21 rocky Exp $
-
-# Test getting default device
+#!/usr/bin/env perl 
 
 use strict;
+use warnings;
 BEGIN {
-    chdir 't' if -d 't';
+    push @INC, ('blib/lib', 'blib/arch');
 }
 use lib '../lib';
 use blib;
 
 use Device::Cdio::Device;
-use Test::Simple tests => 3;
+use Test::More tests => 3;
+note 'Test getting a default device driver';
 
 my $result1=Device::Cdio::get_default_device_driver($perlcdio::DRIVER_DEVICE);
 my $result2=Device::Cdio::get_default_device_driver();
@@ -34,4 +33,3 @@ if (defined($result2)) {
     # Didn't find any default device. So we have to skip this.
     ok(1, "get_default_device_driver array form skipped - no device");
 }
-

@@ -1,23 +1,7 @@
 package Device::Cdio::Track;
 require 5.8.6;
 #
-#    $Id: Track.pm,v 1.13 2006/08/07 11:38:27 rocky Exp $
-#
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  See end for copyright and license.
 
 ### CD Input and control track class
 
@@ -239,11 +223,11 @@ sub get_preemphasis {
     my ($self, @p) = @_;
     return 0 if !_check_arg_count($#_, 0);
     my $rc = perlcdio::get_track_preemphasis($self->{device}, $self->{track});
-    if ($rc == $perlcdio::TRACK_FLAG_FALSE) {
-	return 'none';
-    } elsif ($rc == $perlcdio::TRACK_FLAG_TRUE) {
-	return 'preemphasis';
-    } elsif ($rc == $perlcdio::TRACK_FLAG_UNKNOWN) {
+    if ($rc == $perlcdio::CDIO_TRACK_FLAG_FALSE) {
+	return 'no pre-emphasis';
+    } elsif ($rc == $perlcdio::CDIO_TRACK_FLAG_TRUE) {
+	return 'pre-emphasis';
+    } elsif ($rc == $perlcdio::CDIO_TRACK_FLAG_UNKNOWN) {
 	return 'unknown';
     } else {
 	return 'invalid';
@@ -290,6 +274,32 @@ sub is_track_green {
     return perlcdio::is_track_green($self->{device}, $self->{track});
 }
 
+=pod 
+
+=head2 get_track_isrc
+
+$isrc = $track->get_track_isrc;
+
+Returns an empty string or the International Standard Recording Code.
+Which is presented in 4 hyphen seperated substrings: "CC-XXX-YY-NNNNN"
+
+"CC" two-character ISO 3166-1 alpha-2 country code
+"XXX" is a three character alphanumeric registrant code
+"YY" is the last two digits of the year of registration 
+     (NB not necessarily the date the recording was made)
+"NNNNN" is a unique 5-digit number identifying the particular sound recording.
+
+=cut
+
+sub get_track_isrc {
+    my ($self, @p) = @_;
+    my $isrc =  perlcdioc::cdio_get_track_isrc($self->{device}, $self->{track});
+    if(!$isrc) {
+        $isrc =  perlmmcc::mmc_get_isrc($self->{device}, $self->{track});
+    }
+    $isrc =~ s/(\w\w)(\w\w\w)(\w\w)(\w+)/$1-$2-$3-$4/;    #"CC-XXX-YY-NNNNN"
+    return $isrc;
+}
 =pod
 
 =head2 set_track
@@ -333,9 +343,9 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -344,7 +354,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

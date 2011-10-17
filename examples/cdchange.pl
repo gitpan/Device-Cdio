@@ -1,24 +1,24 @@
 #!/usr/bin/perl -w 
-#$Id: cdchange.pl,v 1.4 2006/02/10 13:39:24 rocky Exp $
+#  $Id$
 #
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+#  Copyright (C) 2006, 2008 Rocky Bernstein <rocky@cpan.org>
 #
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Program to show CD media changing
+
+use strict;
 
 BEGIN {
     chdir 'example' if -d 'example';
@@ -30,8 +30,7 @@ use Device::Cdio;
 use Device::Cdio::Device;
 
 my $sleep_time = 15;
-
-my $d;
+my ($d, $drive_name);
 if ($ARGV[0]) {
     $drive_name=$ARGV[0];
     $d = Device::Cdio::Device->new(-source=>$drive_name);

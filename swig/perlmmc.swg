@@ -1,21 +1,6 @@
 /* -*- c -*-
-    $Id: perlmmc.swg,v 1.2 2006/04/01 16:18:25 rocky Exp $
-
-    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
+  See end for license.
 */
 %define DOCSTRING 
 "A Perl wrapper for The CD Input and Control library's ISO-9660 library's
@@ -174,7 +159,7 @@ typedef long int cdio_mmc_level_t;
 %constant long int FEATURE_PROF_DDCD_ROM   = CDIO_MMC_FEATURE_PROF_DDCD_ROM;
 %constant long int FEATURE_PROF_DDCD_R     = CDIO_MMC_FEATURE_PROF_DDCD_R;
 %constant long int FEATURE_PROF_DDCD_RW    = CDIO_MMC_FEATURE_PROF_DDCD_RW;
-%constant long int FEATURE_PROF_DVD_PR2    = CDIO_MMC_FEATURE_PROF_DVD_PR2;
+%constant long int FEATURE_PROF_DVD_PR    = CDIO_MMC_FEATURE_PROF_DVD_PR;
 %constant long int FEATURE_PROF_NON_CONFORM= CDIO_MMC_FEATURE_PROF_NON_CONFORM;
 %constant long int FEATURE_INTERFACE_UNSPECIFIED = CDIO_MMC_FEATURE_INTERFACE_UNSPECIFIED;
 %constant long int FEATURE_INTERFACE_SCSI  = CDIO_MMC_FEATURE_INTERFACE_SCSI;
@@ -203,8 +188,8 @@ typedef long int cdio_mmc_level_t;
   Command is not "immediate" -- we'll wait for the command to complete.
   For a more general (and lower-level) routine, @see mmc_start_stop_media.
 */
-%rename mmc_eject_media eject_media;
-
+//%rename mmc_eject_media eject_media;
+int mmc_eject_media(const CdIo_t *p_cdio);
 /*!
   Return a string containing the name of the given feature
 */
@@ -489,12 +474,33 @@ typedef long int cdio_mmc_level_t;
     
     @see mmc_eject_media or mmc_close_tray
  */
-%rename mmc_start_stop_media stop_media;
+%rename mmc_start_stop_unit stop_media;
+int mmc_start_stop_unit (const CdIo_t *p_cdio);
+%feature("autodoc",
+"mmc_start_stop_unit cmd, a more general (and lower-level) routine
+to eject media / open tray. mmc_eject_media sometimes does not work.");
+int mmc_close_tray(CdIo_t *p_cdio);
+
+
+char * mmc_get_isrc(CdIo_t *p_cdio, track_t track);
+%inline %{
+char * mmc_get_isrc(CdIo_t *p_cdio, track_t track) {
+    static cdio_isrc_t isrc;
+    bzero(isrc, sizeof(isrc));
+    int status;
+
+    status = mmc_isrc_track_read_subchannel (p_cdio, track, isrc);
+    if(status != DRIVER_OP_SUCCESS)
+        *isrc = '\0';
+    return isrc;
+}
+%}
 
 %perlcode %{
 
 import Device::Cdio::VERSION;
 $VERSION = $Device::Cdio::VERSION;
+use strict;
 
 =pod
 
@@ -527,11 +533,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2008, 2011 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -540,8 +546,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut
 

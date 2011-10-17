@@ -1,26 +1,8 @@
 package Device::Cdio::Device;
 require 5.8.6;
 #
-#    $Id: Device.pm,v 1.14 2006/03/23 16:18:25 rocky Exp $
-#
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-# See the bottom of this file for the POD documentation.  Search for
-# the string '=head'.
+#  $Id$
+#  See end for copyright and license.
 
 =pod
 
@@ -229,7 +211,7 @@ sub  get_arg {
 Get the default CD device.
 
 If the CD object has an opened CD, return the name of the device used.
-(In fact this is the same thing as issuing C<d->get_arg("source")>.
+(In fact this is the same thing as issuing C<d-E<gt>get_arg("source")>).
 
 If we haven't initialized a specific device driver, then find a
 suitable one and return the default device for that.  
@@ -402,12 +384,135 @@ An exception is raised if we had an error.
 sub get_hwinfo {
     my($self,@p) = @_;
     return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 0);
-    # There's a bug I don't understand where p_cdio gets returned
-    # and it shouldn't. So we just ignore that below.
-    my (undef, $vendor, $model, $release, $drc) = 
-	perlcdio::get_hwinfo($self->{cd});
-    return ($vendor, $model, $release, $drc);
+    my ($hwinfo, $drc) = perlcdio::get_hwinfo($self->{cd});
+    return (@$hwinfo, $drc);
 }
+
+=pod
+
+=head2 audio_get_volume
+
+    my($arr, $rc) = $dev->audio_get_volume;
+
+Returns the volume settings of device's 4 channels and the device return code.
+In scalar environmet only the device return code!
+See perlcdio::driver_errmsg($rc) if $rc. 
+
+=cut
+
+sub audio_get_volume {
+    my($self,@p) = @_;
+    my ($vol,$drc) = perlcdio::audio_get_volume_levels($self->{cd});
+    return wantarray ? ($vol,$drc) : $drc;
+}
+
+=pod
+
+=head2 audio_set_volume
+
+    $drc = $dev->audio_set_volume(lvl1, ...lvl4);
+
+Set the volume levels of the channels 1-4. values from 0-255 are possible.
+Use -1 when the value should be kept.
+See perlcdio::driver_errmsg($drc) for return values (!= 0).
+
+=cut
+
+sub audio_set_volume {
+    my($self,@p) = @_;
+    my ($vol, $drc) = perlcdio::audio_get_volume_levels($self->{cd});
+    for(my $i =0;$i<4;$i++) {
+        if(defined $p[$i]) {
+            @$vol[$i] = $p[$i] if $p[$i] > -1;
+            @$vol[$i] = 255 if $p[$i] > 255;
+        }
+    }
+    return perlcdio::audio_set_volume_levels($self->{cd}, @$vol[0], @$vol[1], 
+        @$vol[2], @$vol[3]);
+}
+
+=pod 
+
+=head2 get_disk_cdtext, get_track_cdtext
+
+    $hash = $dev->get_disk_cdtext;
+    $hash = $dev->get_track_cdtext(track);
+
+Returns a hash reference hash->{cdtext_field}="text" 
+if found any cdtext on disk;
+
+=cut
+
+sub get_disk_cdtext {
+    my($self,@p) = @_;
+    return perlcdio::get_cdtext($self->{cd},0);
+}
+
+sub get_track_cdtext {
+    my($self,$t, @p) = @_;
+    $t = 1 if !defined $t;
+    return perlcdio::get_cdtext($self->{cd},$t);
+}
+
+=pod
+
+=head2 get_cddb_discid
+
+    $discid = $dev->get_cddb_discid;
+
+Returns the calculated cddb discid integer. Usually used as hexstring!
+
+=cut
+
+sub get_cddb_discid {
+    my($self,@p) = @_;
+    return perlcdio::get_cddb_discid($self->{cd});
+}
+
+=pod
+
+=head2 audio_get_status
+
+    my($hash, $drc) = $dev->audio_get_status;
+
+Returns a hash reference with the audio-subchannel-mmc status values:
+
+    audio_status : value
+    status_text  : audio_status as text
+                (INVALID,ERROR,NO_STATUS,UNKNWON,playing,paused,completed)
+    track : track number
+    index : index in track
+    msf time values as ints minutes, seconds,frames :
+        abs_m,abs_s,abs_f  : total disk time played
+        rel_m,rel_s,el_f   : track time played
+    disk_s  : seconds disk played
+    track_s : seconds track played
+    address
+    control
+
+=cut
+
+sub audio_get_status {
+    my($self,@p) = @_;
+    my ($ptr, $drc) = perlcdio::audio_get_status($self->{cd});
+    return $ptr, $drc;
+}
+
+=pod
+
+=head2 is_tray_open
+
+    $dev->is_tray_open
+
+returns true if tray seems open, 0 otherwise.
+
+=cut
+
+sub is_tray_open {
+    my($self,@p) = @_;
+    return perlcdio::get_tray_status($self->{cd});
+}
+
 
 =pod
 
@@ -493,6 +598,33 @@ sub get_media_changed {
     my($self,@p) = @_;
     return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 0);
     return perlcdio::get_media_changed($self->{cd});
+}
+
+=pod
+
+=head2 guess_cd_type
+
+$hash = $dev->guess_cd_type($lsn,$track);
+
+Try to determine what kind of CD-image and/or filesystem we have at 
+track $track. First argument is the start lsn of track $track. Returns a 
+hash reference with following keys:
+
+    cdio_fs_t     (enum cdio_fs_t from libcdio) FIXME: add text
+    cdio_fs_cap_t (enum cdio_fs_cap_t from libcdio) FIXME: add text
+    joliet_level  If has Joliet extensions, this is the associated level 
+                    number (i.e. 1, 2, or 3). 
+    iso_label      32 byte ISO fs label.
+    isofs_size     size of ISO fs.
+    UDFVerMajor    UDF fs version.
+    UDFVerMinor    UDF fs version.
+
+=cut
+
+sub guess_cd_type {
+    my($self, $session, $track, @p) = @_;
+    return $perlcdio::BAD_PARAMETER if !_check_arg_count($#_, 2);
+    return perlcdio::guess_cd_type($self->{cd}, $session, $track);
 }
 
 =pod
@@ -775,6 +907,24 @@ sub set_speed {
     return perlcdio::set_speed($self->{cd}, $speed);
 }
 
+=pod
+
+=head2 read_pvd
+
+$pvd = $dev->read_pvd;
+
+Reads and returns the ISO-9660 Primary Volume Descriptor (PVD) from the disk.
+You can use perliso9660::get_pvd_type($pvd) ... methods to get the values.
+
+=cut
+
+
+sub read_pvd {
+    my($self,@p) = @_;
+    return  perlcdio::cdio_read_pvd($self->{cd});
+}
+
+
 1; # Magic true value required at the end of a module
 
 __END__
@@ -802,11 +952,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2008 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -815,7 +965,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

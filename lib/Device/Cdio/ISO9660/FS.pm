@@ -1,24 +1,8 @@
 package Device::Cdio::ISO9660::FS;
 require 5.8.6;
 #
-#    $Id: FS.pm,v 1.10 2006/08/05 08:02:57 rocky Exp $
-#
-#    Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
-#
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  $Id$
+#  See end for copyright and license.
 
 =pod
 
@@ -48,13 +32,13 @@ however needs to be used in conjunction with Device::Cdio::ISO9660.
 
 This is an Object-Oriented interface to the GNU CD Input and Control
 library (C<libcdio>) which is written in C. This class handles ISO
-9660 aspects of a tracks from a CD in a CD-ROM or as a track of a CD
-image. A CD image is distinct from an ISO 9660 image in that a CD
-image contains other CD-line information (e.g. tracks, information or
-assocated with the CD). See also L<Device::Cdio::ISO9660::IFS> for
-working with an ISO 9660 image.
+9660 tracks on a CD or in a CD-ROM.
 
-This is a subclass of L<Device::Cdio::Device>.
+Note that working with a CD in a CD-ROM which has tracks in the
+ISO-9660 format is distinct working with a I<file> in a filesystem
+which contains an ISO-9660 image. See also
+L<Device::Cdio::ISO9660::IFS> for working with an ISO 9660 image
+stored as a file in a fileystem.
 
 =head2 CALLING ROUTINES
 
@@ -72,7 +56,7 @@ dashes for the subsequent parameters.
 
 In the documentation below and elsewhere in this package the parameter
 name that can be used in this style of call is given in the parameter
-list. For example, for "close tray the documentation below reads:
+list. For example, for "close_tray" the documentation below reads:
 
    close_tray(drive=undef, driver_id=$perlcdio::DRIVER_UNKNOWN) 
     -> ($drc, $driver_id)
@@ -83,16 +67,16 @@ used. And if "driver_id" is not specified, a value of
 $perlcdio::DRIVER_UNKNOWN is used.
 
 The older, more traditional style of positional parameters is also
-supported. So the "have_driver example from above can also be written:
+supported. So the "new" example from above can also be written:
 
-    Cdio::have_driver('GNU/Linux')
+    Device::Cdio::ISO9660::FS->new('MYISO.CUE')
 
 Finally, since no parameter name can be confused with a an integer,
 negative values will not get confused as a named parameter.
 
 =cut
 
-$revision = '$Id: FS.pm,v 1.10 2006/08/05 08:02:57 rocky Exp $';
+$revision = '$Id$';
 
 $Device::Cdio::ISO9660::FS::VERSION = $Device::Cdio::VERSION;
 
@@ -115,8 +99,8 @@ use Device::Cdio::Util qw( _check_arg_count _extra_args _rearrange );
 
   find_lsn(lsn)->$stat_href
 
-Find the filesystem entry that contains LSN and statu 
-return information about it. Undef is returned on error.
+Find the filesystem entry that contains LSN and return information
+about it. Undef is returned on error.
 
 =cut
 
@@ -212,7 +196,7 @@ sub readdir {
 
   read_pvd()->pvd
 
-Read the Super block of an ISO 9660 image. This is the rimary Volume
+Read the Super block of an ISO 9660 image. This is the Primary Volume
 Descriptor (PVD) and perhaps a Supplemental Volume Descriptor if
 (Joliet) extensions are acceptable.
 
@@ -240,7 +224,7 @@ Descriptor (PVD) and perhaps a Supplemental Volume Descriptor if
 
 sub read_superblock {
     my($self,@p) = @_;
-    my($iso_mask) = rearrange(['ISO_MASK'], @p);
+    my($iso_mask) = _rearrange(['ISO_MASK'], @p);
     
     $iso_mask = $perliso9660::EXTENSION_NONE if !defined($iso_mask);
 
@@ -325,7 +309,8 @@ __END__
 
 =head1 SEE ALSO
 
-This is a sublcass of L<Device::Cdio::Device>. See
+This is a subclass of Device::Cdio::Device. See also
+L<Device::Cdio::Device>. See
 L<Device::Cdio::ISO9660::IFS> for working with ISO 9660
 images.
 
@@ -342,11 +327,11 @@ Rocky Bernstein C<< <rocky at cpan.org> >>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2006 Rocky Bernstein <rocky@cpan.org>
+Copyright (C) 2006, 2007, 2008 Rocky Bernstein <rocky@cpan.org>
 
-This program is free software; you can redistribute it and/or modify
+This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -355,7 +340,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut
